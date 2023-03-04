@@ -17,7 +17,7 @@ def random_aug_matrix(inputMatrix, size):
             inputMatrix[r][c] = uniform(0, 10)
         inputMatrix[r][size] = uniform(0, 10)
 
-def gauss_elimination(solutionVector, inputMatrix, size):
+def gauss_elimination(inputMatrix, size):
     e = 0.0001
 
     # Zero division checking
@@ -32,7 +32,7 @@ def gauss_elimination(solutionVector, inputMatrix, size):
     
     print_augm_matrix(inputMatrix, size)
 
-    # Back substitution
+def back_substitution(solutionVector, inputMatrix, size):
     solutionVector[size-1] = inputMatrix[size-1][size] / inputMatrix[size-1][size-1]
 
     for r in range(size-2,-1,-1):
@@ -55,6 +55,7 @@ x = np.zeros(shape=N)
 random_aug_matrix(Ab, N)
 print_augm_matrix(Ab, N)
 print("\n")
-gauss_elimination(x, Ab, N)
+gauss_elimination(Ab, N)
+back_substitution(x, Ab, N)
 print("\n")
-print(x)
+print(x, "^T")
