@@ -2,20 +2,9 @@ from sys import exit
 import argparse as argp
 import numpy as np
 import scipy
-from random import uniform
-
-def print_augm_matrix(inputMatrix, size):
-    for r in range(size):
-        print("[ ", end="")
-        for c in range(size):
-            print(" ", inputMatrix[r][c], " ", end="")
-        print("| ", inputMatrix[r][size], " ]")
-
-def random_aug_matrix(inputMatrix, size):
-    for r in range(size):
-        for c in range(size):
-            inputMatrix[r][c] = uniform(0, 10)
-        inputMatrix[r][size] = uniform(0, 10)
+from matrix_handle import random_aug_matrix
+from matrix_handle import print_augm_matrix
+from matrix_handle import import_matrix_from_file
 
 def gauss_elimination(inputMatrix, size):
     e = 0.0001
@@ -51,11 +40,11 @@ Ab = np.zeros(shape=(N, N+1))
 # Solution vector of N elements
 x = np.zeros(shape=N)
 
-
-random_aug_matrix(Ab, N)
-print_augm_matrix(Ab, N)
-print("\n")
-gauss_elimination(Ab, N)
-back_substitution(x, Ab, N)
-print("\n")
-print(x, "^T")
+import_matrix_from_file("zadania/zad1.txt")
+# random_aug_matrix(Ab, N)
+# print_augm_matrix(Ab, N)
+# print("\n")
+# gauss_elimination(Ab, N)
+# back_substitution(x, Ab, N)
+# print("\n")
+# print(x, "^T")
