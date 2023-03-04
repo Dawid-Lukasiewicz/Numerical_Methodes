@@ -8,6 +8,7 @@ def print_augm_matrix(inputMatrix, size):
         for c in range(size):
             print(" ", inputMatrix[r][c], " ", end="")
         print("| ", inputMatrix[r][size], " ]")
+    print("")
 
 def random_aug_matrix(inputMatrix, size):
     for r in range(size):
@@ -18,23 +19,24 @@ def random_aug_matrix(inputMatrix, size):
 def import_matrix_from_file(fileName):
     file = open(fileName, "r")
 
+    # Read the first line and load it to 2d array
     line = file.readline()
     offset = len(line)
     line = re.sub("\n", "", line)
-    array1d = np.array(re.split(" ", line, maxsplit=0))
+    array2d = np.array(re.split(" ", line, maxsplit=0))
+    array2d = [float(i) for i in array2d]
+    matrixSize = len(array2d)
     
+    # Offset for new line
     file.seek(offset)
-    print(array1d)
 
-    r = 0
+    #  Iterating through all the rest
     for line in file:
         line = re.sub("\n", "", line)
         array = re.split(" ", line, maxsplit=0)
-        print(array)
-        np.vstack((array1d, array))
-        # array1d = np.expand_dims(array, axis=r)
-        # array1d = np.append(array1d, array, axis=r)
-        r = r + 1
-    # print(array1d)
+        array = [float(i) for i in array]
+        array2d = np.vstack((array2d, array))
 
     file.close()
+    importedMatrix = np.asarray(array2d)
+    return [importedMatrix, matrixSize-1]

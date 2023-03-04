@@ -31,20 +31,14 @@ def back_substitution(solutionVector, inputMatrix, size):
 
         solutionVector[r] = solutionVector[r] / inputMatrix[r][r]
 
+[Ab, N] = import_matrix_from_file("zadania/zad1.txt")
 
-
-N = 3
-
-# Matrix input NxN+1
-Ab = np.zeros(shape=(N, N+1))
 # Solution vector of N elements
 x = np.zeros(shape=N)
-
-import_matrix_from_file("zadania/zad1.txt")
-# random_aug_matrix(Ab, N)
-# print_augm_matrix(Ab, N)
-# print("\n")
-# gauss_elimination(Ab, N)
-# back_substitution(x, Ab, N)
-# print("\n")
-# print(x, "^T")
+# Printing augmented matrix
+print_augm_matrix(Ab, N)
+# Perform gauss elimination
+gauss_elimination(Ab, N)
+# Back substitution of gauss elimination result
+back_substitution(x, Ab, N)
+print(x, "^T")
