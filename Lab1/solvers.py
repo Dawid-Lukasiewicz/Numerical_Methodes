@@ -1,10 +1,9 @@
-from sys import exit
-import argparse as argp
 import numpy as np
-import scipy
-from matrix_handle import random_aug_matrix
-from matrix_handle import print_augm_matrix
-from matrix_handle import import_matrix_from_file
+
+""" Matrix handler functions """
+from matrix_handler import random_aug_matrix
+from matrix_handler import print_augm_matrix
+from matrix_handler import import_matrix_from_file
 
 def gauss_elimination(inputMatrix, size):
     e = 0.0001
@@ -17,11 +16,14 @@ def gauss_elimination(inputMatrix, size):
         for k in range(r+1, size):
             ratio = inputMatrix[k][r]/inputMatrix[r][r]
 
-            Ab[k] = Ab[k] - ratio * Ab[r]
+            inputMatrix[k] = inputMatrix[k] - ratio * inputMatrix[r]
     
-    print_augm_matrix(inputMatrix, size)
+    # print_augm_matrix(inputMatrix, size)
+    # return inputMatrix
 
-def back_substitution(solutionVector, inputMatrix, size):
+def back_substitution(inputMatrix, size):
+    # Solution vector of size elements
+    solutionVector = np.zeros(size)
     solutionVector[size-1] = inputMatrix[size-1][size] / inputMatrix[size-1][size-1]
 
     for r in range(size-2,-1,-1):
@@ -31,14 +33,4 @@ def back_substitution(solutionVector, inputMatrix, size):
 
         solutionVector[r] = solutionVector[r] / inputMatrix[r][r]
 
-[Ab, N] = import_matrix_from_file("zadania/zad1.txt")
-
-# Solution vector of N elements
-x = np.zeros(shape=N)
-# Printing augmented matrix
-print_augm_matrix(Ab, N)
-# Perform gauss elimination
-gauss_elimination(Ab, N)
-# Back substitution of gauss elimination result
-back_substitution(x, Ab, N)
-print(x, "^T")
+    return solutionVector
