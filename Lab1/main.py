@@ -8,27 +8,42 @@ from matrix_handler import import_matrix_from_file
 from solvers import gauss_elimination
 from solvers import back_substitution
 
-[Ab1, N1] = import_matrix_from_file("zadania/zad1.txt")
-[Ab2, N2] = import_matrix_from_file("zadania/zad2.txt")
-[Ab3, N3] = import_matrix_from_file("zadania/zad3.txt")
-
-print_augm_matrix(Ab1, N1)
-if not gauss_elimination(Ab1, N1):
+[Ab, N] = import_matrix_from_file("zadania/zad1.txt")
+print_augm_matrix(Ab, N)
+if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
-    x = back_substitution(Ab1, N1)
+    x = back_substitution(Ab, N)
     print(x, "^T\n")
 
-print_augm_matrix(Ab2, N2)
-if not gauss_elimination(Ab2, N2):
+[Ab, N] = import_matrix_from_file("zadania/zad2.txt")
+print_augm_matrix(Ab, N)
+if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
-    x = back_substitution(Ab2, N2)
+    x = back_substitution(Ab, N)
     print(x, "^T\n")
 
-print_augm_matrix(Ab3, N3)
-if not gauss_elimination(Ab3, N3):
+[Ab, N] = import_matrix_from_file("zadania/zad3.txt")
+print_augm_matrix(Ab, N)
+if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
-    x = back_substitution(Ab3, N3)
+    x = back_substitution(Ab, N)
+    print(x, "^T\n")
+
+[Ab, N] = import_matrix_from_file("zadania/zad4_a.txt")
+print_augm_matrix(Ab, N)
+if not gauss_elimination(Ab, N):
+    print("Division by zero\n")
+else:
+    x = back_substitution(Ab, N)
+    print(x, "^T\n")
+
+[Ab, N] = import_matrix_from_file("zadania/zad4_b.txt")
+print_augm_matrix(Ab, N)
+if not gauss_elimination(Ab, N):
+    print("Division by zero\n")
+else:
+    x = back_substitution(Ab, N)
     print(x, "^T\n")
