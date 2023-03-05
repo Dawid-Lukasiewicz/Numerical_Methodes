@@ -1,25 +1,25 @@
 import numpy as np
 
-""" Matrix handler functions """
 from matrix_handler import random_aug_matrix
 from matrix_handler import print_augm_matrix
 from matrix_handler import import_matrix_from_file
 
+""" Matrix equation solvers """
+
 def gauss_elimination(inputMatrix, size):
-    e = 0.0001
+    e = 0.000000001
 
-    # Zero division checking
     for r in range(size):
+        # Zero division checking
         if abs(inputMatrix[r][r]) < e:
-            exit("Division by zero")
-
+            return False
         for k in range(r+1, size):
             ratio = inputMatrix[k][r]/inputMatrix[r][r]
 
             inputMatrix[k] = inputMatrix[k] - ratio * inputMatrix[r]
     
-    # print_augm_matrix(inputMatrix, size)
-    # return inputMatrix
+    print_augm_matrix(inputMatrix, size)
+    return True
 
 def back_substitution(inputMatrix, size):
     # Solution vector of size elements

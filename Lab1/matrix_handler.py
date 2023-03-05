@@ -2,6 +2,8 @@ from random import uniform
 import numpy as np
 import re
 
+""" Matrix handler functions """
+
 def print_augm_matrix(inputMatrix, size):
     for r in range(size):
         print("[ ", end="")
