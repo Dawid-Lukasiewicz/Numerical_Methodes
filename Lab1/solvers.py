@@ -40,18 +40,22 @@ def pivot_matrix(inputMatrix, size):
     identityMatrix = np.eye(size)
 
     for r in range(size):
+        # Find max value in row
         row = max(range(r, size), key=lambda k: abs(inputMatrix[k][r]))
         if r != row:
+            # Swap rows
             [identityMatrix[r], identityMatrix[row]] = [identityMatrix[row], identityMatrix[r]]
 
     return identityMatrix
 
 def lup_decompozition(inputMatrix, size=0):
+    # If no size given deduce from first row
     if size == 0:
         size = len(inputMatrix[0])
 
     pivotMatrix = pivot_matrix(inputMatrix, size)
 
+    # multiply matrix
     PA = np.matmul(pivotMatrix, inputMatrix)
 
     L = np.zeros((size, size))
@@ -59,6 +63,7 @@ def lup_decompozition(inputMatrix, size=0):
     for k in range(size):
         L[k][k] = 1.0
 
+        # Perform LUP decomposition
         for i in range(k, size):
             s1 = sum(L[i][p] * U[p][k] for p in range(1, k-1))
             L[i][k] = PA[i][k] - s1
