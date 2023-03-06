@@ -34,3 +34,37 @@ def back_substitution(inputMatrix, size):
         solutionVector[r] = solutionVector[r] / inputMatrix[r][r]
 
     return solutionVector
+
+def pivot_matrix(inputMatrix, size):
+
+    identityMatrix = np.eye(size)
+
+    for r in range(size):
+        row = max(range(r, size), key=lambda k: abs(inputMatrix[k][r]))
+        if r != row:
+            [identityMatrix[r], identityMatrix[row]] = [identityMatrix[row], identityMatrix[r]]
+
+    return identityMatrix
+
+def lup_decompozition(inputMatrix, size=0):
+    if size == 0:
+        size = len(inputMatrix[0])
+
+    pivotMatrix = pivot_matrix(inputMatrix, size)
+
+    PA = np.matmul(pivotMatrix, inputMatrix)
+
+    L = np.zeros((size, size))
+    U = np.zeros((size, size))
+    for k in range(size):
+        L[k][k] = 1.0
+
+        for i in range(k, size):
+            s1 = sum(L[i][p] * U[p][k] for p in range(1, k-1))
+            L[i][k] = PA[i][k] - s1
+
+        for j in range(k+1, size):
+            s2 = sum(L[k][p] * U[p][j] for p in range(1, k-1))
+            U[k][j] = (PA[k][j] - s2)/L[k][k]
+
+    return (pivotMatrix, L, U)
