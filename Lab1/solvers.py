@@ -21,6 +21,23 @@ def gauss_elimination(inputMatrix, size):
     print_augm_matrix(inputMatrix, size)
     return True
 
+def gauss_elimination_partial_pivot(inputMatrix, size):
+    e = 0.0001
+
+    for r in range(size):
+        # Searching non-zero value for division
+        p = 0 
+        while abs(inputMatrix[r][r+p]) < e: p+=1
+        # Swapping rows
+        inputMatrix[[r, r+p]] = inputMatrix[[r+p, r]]
+
+        for k in range(r+1, size):
+            ratio = inputMatrix[k][r]/inputMatrix[r][r]
+
+            inputMatrix[k] = inputMatrix[k] - ratio * inputMatrix[r]
+    
+    print_augm_matrix(inputMatrix, size)
+
 def back_substitution(inputMatrix, size):
     # Solution vector of size elements
     solutionVector = np.zeros(size)
