@@ -21,23 +21,24 @@ def random_aug_matrix(inputMatrix, size):
 def import_matrix_from_file(fileName):
     file = open(fileName, "r")
 
-    # Read the first line and load it to 2d array
+    # Read one line to deduce augmented matrix size
     line = file.readline()
-    offset = len(line)
-    line = re.sub("\n", "", line)
-    array2d = np.array(re.split(" ", line, maxsplit=0))
-    array2d = [float(i) for i in array2d]
-    matrixSize = len(array2d)
-    
-    # Offset for new line
-    file.seek(offset)
+    file.seek(0)
+    matrixSize = len(np.array(re.split(" ", line, maxsplit=0)))
+    array2d = np.zeros(matrixSize)
+    print(array2d)
 
     #  Iterating through all the rest
+    counter = 0
     for line in file:
         line = re.sub("\n", "", line)
-        array = re.split(" ", line, maxsplit=0)
-        array = [float(i) for i in array]
-        array2d = np.vstack((array2d, array))
+        newArray = re.split(" ", line, maxsplit=0)
+        newArray = [float(i) for i in newArray]
+        if counter == 0:
+            array2d = newArray
+        else:
+            array2d = np.vstack((array2d, newArray))
+        counter = counter + 1
 
     file.close()
     importedMatrix = np.asarray(array2d)
