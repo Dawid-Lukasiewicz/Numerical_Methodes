@@ -1,7 +1,7 @@
 from sys import exit
 import argparse as argp
 import numpy as np
-import scipy
+# import scipy
 from matrix_handler import random_aug_matrix
 from matrix_handler import print_augm_matrix
 from matrix_handler import import_matrix_from_file
