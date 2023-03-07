@@ -26,8 +26,7 @@ def import_matrix_from_file(fileName):
     file.seek(0)
     matrixSize = len(np.array(re.split(" ", line, maxsplit=0)))
     array2d = np.zeros(matrixSize)
-    print(array2d)
-
+    
     #  Iterating through all the rest
     counter = 0
     for line in file:
