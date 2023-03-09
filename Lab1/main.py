@@ -8,6 +8,7 @@ from matrix_handler import print_augm_matrix
 from matrix_handler import import_matrix_from_file
 from solvers import gauss_elimination
 from solvers import back_substitution
+from solvers import forward_substitution
 from solvers import lup_decompozition
 from solvers import pivot_matrix
 from solvers import gauss_elimination_partial_pivot
@@ -21,19 +22,19 @@ if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
     x = back_substitution(Ab, N)
-    print(x, "^T\n")
+    print(x)
 
 print("Zadanie 2")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad2.txt"))
 print_augm_matrix(Ab, N)
 gauss_elimination_partial_pivot(Ab, N)
 x = back_substitution(Ab, N)
-print(x, "^T\n")
+print(x)
 # if not gauss_elimination_partial_pivot(Ab, N):
 #     print("Division by zero\n")
 # else:
 #     x = back_substitution(Ab, N)
-#     print(x, "^T\n")
+#     print(x)
 
 print("Zadanie 3")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad3.txt"))
@@ -42,7 +43,7 @@ if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
     x = back_substitution(Ab, N)
-    print(x, "^T\n")
+    print(x)
 
 print("Zadanie 4 A")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad4_a.txt"))
@@ -51,7 +52,7 @@ if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
     x = back_substitution(Ab, N)
-    print(x, "^T\n")
+    print(x)
 
 print("Zadanie 4 B")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad4_b.txt"))
@@ -60,18 +61,38 @@ if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
     x = back_substitution(Ab, N)
-    print(x, "^T\n")
+    print(x)
 
 print("Zadanie 5")
-[A, _] = import_matrix_from_file(os.path.join(zadania, "zad5.txt"))
+# [A, N] = import_matrix_from_file(os.path.join(zadania, "zad5.txt"))
+A = np.loadtxt(os.path.join(zadania, "zad5.txt"), float, delimiter=" ", ndmin=2)
 print(A)
+N = len(A[0])
 print("\n")
 [P, L, U] = lup_decompozition(A)
-print("P = ")
-print(P, "\n")
+# print("P = ")
+# print(P, "\n")
 
-print("L = ")
-print(L, "\n")
+# print("L = ")
+# print(L, "\n")
 
-print("U = ")
-print(U, "\n")
+# print("U = ")
+# print(U, "\n")
+
+b = np.ones((N, 1))
+
+Ly = np.hstack((L, b))
+
+print_augm_matrix(Ly, N)
+
+# print("Ly = ")
+
+y = forward_substitution(Ly, N)
+# print(y)
+
+Uy = np.hstack((U, y))
+
+x = back_substitution(Uy, N)
+
+print("Solution = ")
+print(x)
