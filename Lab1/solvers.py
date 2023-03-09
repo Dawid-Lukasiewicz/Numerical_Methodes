@@ -40,12 +40,26 @@ def gauss_elimination_partial_pivot(inputMatrix, size):
 
 def back_substitution(inputMatrix, size):
     # Solution vector of size elements
-    solutionVector = np.zeros(size)
+    solutionVector = np.zeros((size, 1))
     solutionVector[size-1] = inputMatrix[size-1][size] / inputMatrix[size-1][size-1]
 
     for r in range(size-2,-1,-1):
         solutionVector[r] = inputMatrix[r][size]
         for k in range(r+1, size):
+            solutionVector[r] = solutionVector[r] - inputMatrix[r][k] * solutionVector[k]
+
+        solutionVector[r] = solutionVector[r] / inputMatrix[r][r]
+
+    return solutionVector
+
+def forward_substitution(inputMatrix, size):
+    # Solution vector of size elements
+    solutionVector = np.zeros((size, 1))
+    solutionVector[0] = inputMatrix[0][size] / inputMatrix[0][0]
+
+    for r in range(1, size):
+        solutionVector[r] = inputMatrix[r][size]
+        for k in range(r):
             solutionVector[r] = solutionVector[r] - inputMatrix[r][k] * solutionVector[k]
 
         solutionVector[r] = solutionVector[r] / inputMatrix[r][r]
