@@ -53,15 +53,16 @@ def back_substitution(inputMatrix, size):
     return solutionVector
 
 def pivot_matrix(inputMatrix, size):
-
+    e = 0.0001
     identityMatrix = np.eye(size)
 
     for r in range(size):
-        # Find max value in row
-        row = max(range(r, size), key=lambda k: abs(inputMatrix[k][r]))
-        if r != row:
-            # Swap rows
-            [identityMatrix[r], identityMatrix[row]] = [identityMatrix[row], identityMatrix[r]]
+        # Searching non-zero values
+        if abs(inputMatrix[r][r]) < e:
+            for i in range(r+1, size):
+                if abs(inputMatrix[i][r]) > abs(inputMatrix[r][r]):
+                    # Swapping rows
+                    identityMatrix[[r, i]] = identityMatrix[[i, r]]
 
     return identityMatrix
 
@@ -70,9 +71,9 @@ def lup_decompozition(inputMatrix, size=0):
     if size == 0:
         size = len(inputMatrix[0])
 
+    # if input matrix has no zero values on diagonal then pivot matrix is identity matrix
     pivotMatrix = pivot_matrix(inputMatrix, size)
-
-    # multiply matrix
+    # multiply matrix PA to get matrix with swapped rows
     PA = np.matmul(pivotMatrix, inputMatrix)
 
     L = np.zeros((size, size))
@@ -81,12 +82,12 @@ def lup_decompozition(inputMatrix, size=0):
         L[k][k] = 1.0
 
         # Perform LUP decomposition
-        for i in range(k, size):
-            s1 = sum(L[i][p] * U[p][k] for p in range(1, k-1))
-            L[i][k] = PA[i][k] - s1
+        for i in range(k+1):
+            s1 = sum(L[i][p] * U[p][k] for p in range(i))
+            U[i][k] = PA[i][k] - s1
 
-        for j in range(k+1, size):
-            s2 = sum(L[k][p] * U[p][j] for p in range(1, k-1))
-            U[k][j] = (PA[k][j] - s2)/L[k][k]
+        for j in range(k, size):
+            s2 = sum(L[j][p] * U[p][j] for p in range(k))
+            L[j][k] = (PA[j][k] - s2)/U[k][k]
 
     return (pivotMatrix, L, U)
