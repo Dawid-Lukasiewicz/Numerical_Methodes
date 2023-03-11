@@ -15,8 +15,10 @@ from solvers import gauss_elimination_partial_pivot
 
 zadania = "zadania"
 
-print("Zadanie 1")
-[Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad1.txt"))
+print("#################################### Zadanie 1 ####################################")
+# [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad1.txt"))
+Ab = np.loadtxt(os.path.join(zadania, "zad1.txt"), float, delimiter=" ", ndmin=2)
+N = len(Ab)
 print_augm_matrix(Ab, N)
 if not gauss_elimination(Ab, N):
     print("Division by zero\n")
@@ -24,28 +26,40 @@ else:
     x = back_substitution(Ab, N)
     print(x)
 
-print("Zadanie 2")
+A= np.hsplit(Ab, [0, 4])
+x = np.linalg.solve(A[1], A[2])
+print(x)
+
+print("#################################### Zadanie 2 ####################################")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad2.txt"))
 print_augm_matrix(Ab, N)
 gauss_elimination_partial_pivot(Ab, N)
 x = back_substitution(Ab, N)
 print(x)
-# if not gauss_elimination_partial_pivot(Ab, N):
-#     print("Division by zero\n")
-# else:
-#     x = back_substitution(Ab, N)
-#     print(x)
 
-print("Zadanie 3")
+print("Wbudowane funkcje")
+A = np.hsplit(Ab, [0, 3])
+x = np.linalg.solve(A[1], A[2])
+print(x)
+
+print("#################################### Zadanie 3 ####################################")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad3.txt"))
+Ab2 = Ab
 print_augm_matrix(Ab, N)
+
+print("Bez podstawiania")
 if not gauss_elimination(Ab, N):
     print("Division by zero\n")
 else:
     x = back_substitution(Ab, N)
     print(x)
 
-print("Zadanie 4 A")
+print("Z podstawianiem")
+gauss_elimination_partial_pivot(Ab2, N)
+x = back_substitution(Ab2, N)
+print(x)
+
+print("#################################### Zadanie 4 A ####################################")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad4_a.txt"))
 print_augm_matrix(Ab, N)
 if not gauss_elimination(Ab, N):
@@ -54,7 +68,7 @@ else:
     x = back_substitution(Ab, N)
     print(x)
 
-print("Zadanie 4 B")
+print("#################################### Zadanie 4 B ####################################")
 [Ab, N] = import_matrix_from_file(os.path.join(zadania, "zad4_b.txt"))
 print_augm_matrix(Ab, N)
 if not gauss_elimination(Ab, N):
@@ -63,21 +77,21 @@ else:
     x = back_substitution(Ab, N)
     print(x)
 
-print("Zadanie 5")
+print("#################################### Zadanie 5 ####################################")
 # [A, N] = import_matrix_from_file(os.path.join(zadania, "zad5.txt"))
 A = np.loadtxt(os.path.join(zadania, "zad5.txt"), float, delimiter=" ", ndmin=2)
 print(A)
 N = len(A[0])
 print("\n")
 [P, L, U] = lup_decompozition(A)
-# print("P = ")
-# print(P, "\n")
+print("P = ")
+print(P, "\n")
 
-# print("L = ")
-# print(L, "\n")
+print("L = ")
+print(L, "\n")
 
-# print("U = ")
-# print(U, "\n")
+print("U = ")
+print(U, "\n")
 
 b = np.ones((N, 1))
 
@@ -85,12 +99,15 @@ Ly = np.hstack((L, b))
 
 print_augm_matrix(Ly, N)
 
-# print("Ly = ")
+print("Ly = ")
 
 y = forward_substitution(Ly, N)
-# print(y)
+print(y)
 
 Uy = np.hstack((U, y))
+
+print("Uy =")
+print_augm_matrix(Uy, N)
 
 x = back_substitution(Uy, N)
 
