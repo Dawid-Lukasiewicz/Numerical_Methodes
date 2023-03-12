@@ -105,3 +105,23 @@ def lup_decompozition(inputMatrix, size=0):
             L[j][k] = (PA[j][k] - s2)/U[k][k]
 
     return (pivotMatrix, L, U)
+
+def qr_with_gramm_schmidt(inputMatrix, size=0):
+    if size == 0:
+        size = len(inputMatrix)
+
+    m, n = inputMatrix.shape
+    A = inputMatrix.T
+
+    Q = []
+    for i in range(size):
+        row = A[i]
+        for o in Q:
+            vectorP = np.multiply((np.dot(row, o)/np.dot(o, o)), o)
+            row = np.subtract(row, vectorP)
+        
+        Q.append(row)
+        
+    Q /= np.linalg.norm(Q, axis=0)
+    R = np.matmul(Q.T, inputMatrix)
+    return np.asarray(Q), R

@@ -12,6 +12,7 @@ from solvers import forward_substitution
 from solvers import lup_decompozition
 from solvers import pivot_matrix
 from solvers import gauss_elimination_partial_pivot
+from solvers import qr_with_gramm_schmidt
 
 zadania = "zadania"
 
@@ -152,3 +153,16 @@ print(LU, "\n")
 
 x = sci.linalg.lu_solve([LU, P], b)
 print(x)
+
+print("#################################### Zadanie 7 ####################################")
+A = np.loadtxt(os.path.join(zadania, "zad7.txt"), float, delimiter=" ", ndmin=2)
+print(A)
+
+Q, R = qr_with_gramm_schmidt(A)
+print(Q)
+print(R)
+
+# Q, R = sci.linalg.qr(A)
+# print(Q)
+
+# print(R)
