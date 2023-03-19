@@ -3,6 +3,7 @@ import os
 import argparse as argp
 import numpy as np
 import scipy as sci
+import solvers as slv
 
 zadania = "zadania"
 
@@ -68,3 +69,13 @@ print("eigenvector is = \n", vr[2])
 
 print("for eigenvalue = ", x[3])
 print("eigenvector is = \n", vr[3])
+
+print("#################################### Zadanie 2 A ####################################")
+A = np.loadtxt(os.path.join(zadania, "zad2_A.txt"), float, delimiter=" ", ndmin=2)
+
+h1, x = slv.power_method(A, 20)
+if False == h1:
+    print("Not square matrix")
+else:
+    print("Eigenvalue = ", h1)
+    print("Eigenvector = \n", x)
