@@ -17,3 +17,8 @@ def power_method(A, itr):
         x = x / x.max()
     
     return h1, x
+
+def inverse_power_method(A, itr):
+    A_inv = np.linalg.inv(A)
+
+    return power_method(A_inv, itr)

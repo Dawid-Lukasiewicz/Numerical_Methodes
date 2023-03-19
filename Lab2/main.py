@@ -72,8 +72,17 @@ print("eigenvector is = \n", vr[3])
 
 print("#################################### Zadanie 2 A ####################################")
 A = np.loadtxt(os.path.join(zadania, "zad2_A.txt"), float, delimiter=" ", ndmin=2)
+print(A)
+h1, x = slv.power_method(A, 1)
+if False == h1:
+    print("Not square matrix")
+else:
+    print("Eigenvalue = ", h1)
+    print("Eigenvector = \n", x)
 
-h1, x = slv.power_method(A, 20)
+print("#################################### Zadanie 2 B ####################################")
+print(A)
+h1, x = slv.inverse_power_method(A, 100)
 if False == h1:
     print("Not square matrix")
 else:
