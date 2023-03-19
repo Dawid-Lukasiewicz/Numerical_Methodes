@@ -70,9 +70,10 @@ print("eigenvector is = \n", vr[2])
 print("for eigenvalue = ", x[3])
 print("eigenvector is = \n", vr[3])
 
-print("#################################### Zadanie 2 A ####################################")
+print("#################################### Zadanie 2 Biggest eigenvalue ####################################")
 A = np.loadtxt(os.path.join(zadania, "zad2_A.txt"), float, delimiter=" ", ndmin=2)
 print(A)
+n, m = A.shape
 h1, x = slv.power_method(A, 1)
 if False == h1:
     print("Not square matrix")
@@ -80,11 +81,26 @@ else:
     print("Eigenvalue = ", h1)
     print("Eigenvector = \n", x)
 
-print("#################################### Zadanie 2 B ####################################")
+print("#################################### Zadanie 2 Smallest eigenvalue with inverse ####################################")
 print(A)
+n, m = A.shape
 h1, x = slv.inverse_power_method(A, 100)
 if False == h1:
     print("Not square matrix")
 else:
     print("Eigenvalue = ", h1)
     print("Eigenvector = \n", x)
+
+
+print("#################################### Zadanie 2 Smallest eigenvalue with shifting ####################################")
+print(A)
+A_k = slv.shifted_power_method(A, 10)
+if False == h1:
+    print("Not square matrix")
+else:
+    # print("Eigenvalue = ", h1)
+    print("A_k = \n", A_k)
+
+# The smallest eigenvalue is last on diagonal
+smallest_h = A_k[n-1][n-1]
+print("Smallest eigenvalue = ", smallest_h)

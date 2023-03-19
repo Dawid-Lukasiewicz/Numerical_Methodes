@@ -24,3 +24,15 @@ def inverse_power_method(A, itr):
     A_inv = sci.linalg.inv(A)  
     h1_inv, x_inv = power_method(A_inv, itr)
     return 1/h1_inv, 1/x_inv
+
+def shifted_power_method(A, itr):
+    # If A not square matrix then return False
+    n, m = A.shape
+    if not n == m:
+        return False
+
+    for i in range(itr):
+        Q, R = np.linalg.qr(A)
+        A = np.dot(R, Q)
+
+    return A
