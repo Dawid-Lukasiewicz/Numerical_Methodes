@@ -18,7 +18,9 @@ def power_method(A, itr):
     
     return h1, x
 
+# This method finds smallest just by inverting matrix A
+# and perfomring power method on such matrix
 def inverse_power_method(A, itr):
-    A_inv = np.linalg.inv(A)
-
-    return power_method(A_inv, itr)
+    A_inv = sci.linalg.inv(A)  
+    h1_inv, x_inv = power_method(A_inv, itr)
+    return 1/h1_inv, 1/x_inv
