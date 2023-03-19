@@ -104,3 +104,35 @@ else:
 # The smallest eigenvalue is last on diagonal
 smallest_h = A_k[n-1][n-1]
 print("Smallest eigenvalue = ", smallest_h)
+
+print("#################################### Zadanie 6 TEST ####################################")
+A = np.loadtxt(os.path.join(zadania, "test2.txt"), float, delimiter=" ", ndmin=2)
+print(A)
+
+U, S, V = slv.svd_method(A)
+
+print(np.matmul(np.matmul(U, S), V.T))
+
+# print("#################################### Zadanie 6 A ####################################")
+# A = np.loadtxt(os.path.join(zadania, "zad6_A.txt"), float, delimiter=" ", ndmin=2)
+# print(A)
+
+# U, S, V = slv.svd_method(A)
+
+# print(np.matmul(np.matmul(U, S), V.T))
+
+# print("#################################### Zadanie 6 B ####################################")
+# A = np.loadtxt(os.path.join(zadania, "zad6_B.txt"), float, delimiter=" ", ndmin=2)
+# print(A)
+
+# U, S, V = slv.svd_method(A)
+
+# print(np.matmul(np.matmul(U, S), V.T))
+
+# print("#################################### Zadanie 6 C ####################################")
+# A = np.loadtxt(os.path.join(zadania, "zad6_C.txt"), float, delimiter=" ", ndmin=2)
+# print(A)
+
+# U, S, V = slv.svd_method(A)
+
+# print(np.matmul(np.matmul(U, S), V.T))
