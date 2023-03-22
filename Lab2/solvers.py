@@ -4,6 +4,41 @@ sys.path.append("../")
 import scipy as sci
 import numpy as np
 
+def eig(A, epsilon=1e-10, max_iterations=1000):
+    """
+    Calculates the eigenvalues and eigenvectors of a square matrix using the QR algorithm.
+
+    Args:
+        A (numpy.ndarray): A square matrix.
+        epsilon (float): The convergence threshold.
+        max_iterations (int): The maximum number of iterations to perform.
+
+    Returns:
+        Tuple containing the eigenvalues and eigenvectors of the matrix A.
+    """
+    # Initialize the eigenvectors to the identity matrix
+    n = A.shape[0]
+    Q = np.eye(n)
+
+    # Repeat until convergence or maximum number of iterations is reached
+    for i in range(max_iterations):
+        # Apply the QR decomposition to A
+        Q, R = np.linalg.qr(A.dot(Q))
+
+        # Calculate the new matrix A
+        A = R.dot(Q)
+
+        # Check for convergence
+        if np.abs(A.diagonal() - A.diagonal().min()).max() < epsilon:
+            break
+
+    # Extract the eigenvalues and eigenvectors
+    eigenvalues = A.diagonal()
+    eigenvectors = Q
+
+    return eigenvalues, eigenvectors
+
+
 def power_method(A, itr):
     # If A not square matrix then return False
     n, m = A.shape
