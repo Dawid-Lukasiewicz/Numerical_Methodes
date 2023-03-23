@@ -45,7 +45,9 @@ def power_method(A, itr):
     if not n == m:
         return False
 
+    # initialize eigenvector with ones
     x = np.ones([n, 1])
+    # perform power method in loop for itr iterations
     for i in range(itr):
         x = np.dot(A, x)
         h1 = abs(x).max()
@@ -76,38 +78,48 @@ def svd_method(A):
     n, m = A.shape
     rankA = np.linalg.matrix_rank(A)
 
+    # Finding eigenvalues and eigenvector to create matrix U
     matrixW = sci.matmul(A, A.T)
     vectorLambdaU, matrixU = sci.linalg.eig(matrixW)
-    print("U = \n", matrixU)
 
+
+    # Finding eigenvalues and eigenvector to create matrix V
     matrixR = sci.matmul(A.T, A)
     vectorLambdaV, matrixV = sci.linalg.eig(matrixR)
-    print("V = \n", matrixV)
 
+    # Taking eigenvalues from matrix U to create array of sigma values
     vectorSigma = np.sqrt(vectorLambdaU)
     vectorSigmaNonZero = []
     for index, sigmaVal in enumerate(vectorSigma):
         if sigmaVal > 0:
             vectorSigmaNonZero.append(sigmaVal)
 
+    # Create matrix S of matching size
     vectorSigmaNonZero = np.asarray(vectorSigmaNonZero)
     S_diag = np.asarray(np.diag(vectorSigmaNonZero))
-    # S = np.asmatrix(np.diag(vectorSigmaNonZero))
     if n == m:
         shape = (n, n)
-        print(shape)
         # S = np.resize(S, shape)
     elif m > n and rankA == n:
         S = np.zeros((len(vectorSigmaNonZero), m))
-        # S = np.pad(S, ((m-n, 0), (0, 0)), "constant", constant_values=(0))
     elif n > m and rankA == m:
         S = np.zeros((n, len(vectorSigmaNonZero)))
-        # S = np.pad(S, ((0, n-m), (0, 0)), "constant", constant_values=(0))
 
+    # Write sigma values to matrix S
     for i in range(len(S_diag[0])):
         for j in range(len(S_diag[i])):
             S[i][j] = S_diag[i][j].real
 
-    print("S = \n", S)
 
     return matrixU, S, matrixV
+
+def evd_method(A):
+    H = np.zeros(A.shape)
+
+    h, X = sci.linalg.eig(A)
+    for i in range(len(h)):
+        H[i][i] = h[i].real
+
+    X_inv = sci.linalg.inv(A)
+
+    return X, H, X_inv
