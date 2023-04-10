@@ -1,8 +1,20 @@
+from IPython.display import display, Math
 from random import uniform
 import numpy as np
 import re
 
 """ Matrix handler functions """
+
+def print_matrix(array):
+    matrix = ''
+    for row in array:
+        try:
+            for number in row:
+                matrix += f'{number}&'
+        except TypeError:
+            matrix += f'{row}&'
+        matrix = matrix[:-1] + r'\\'
+    display(Math(r'\begin{bmatrix}'+matrix+r'\end{bmatrix}'))
 
 def print_augm_matrix(inputMatrix, size):
     for r in range(size):
