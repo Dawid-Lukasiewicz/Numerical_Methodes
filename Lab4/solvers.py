@@ -7,8 +7,8 @@ import scipy as sci
 import matrix_handler as mx
 
 def focuss_algorithm(A, x, b, p=1, h=1, epsilon=pow(10, -5)):
-    M = len(x)
-    W = np.zeros([M, M], float)
+    M, N = A.shape
+    W = np.zeros([N, N], float)
     normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
     while True:
         # x^(1-(p/2))
@@ -17,9 +17,11 @@ def focuss_algorithm(A, x, b, p=1, h=1, epsilon=pow(10, -5)):
         np.fill_diagonal(W, x)
 
         #x_{k+1} =  W^2(x_k) * A^T (A * W^2(x_k) * A^T + h * Im)^(-1) * b
-        part1 = np.linalg.matrix_power(W, 2) @ A.T
-        part2 = np.linalg.inv( A @ np.linalg.matrix_power(W, 2) @ A.T + np.multiply(h, np.diag(np.ones(M))) )
-        x = part1 @ part2 @ b
+        part1 = np.linalg.matrix_power(W, 2) @ A.T # W^2(x_k) * A^T
+        part2 = A @ np.linalg.matrix_power(W, 2) @ A.T # A * W^2(x_k) * A^T
+        part3 = np.multiply(h, np.diag(np.ones(M))) # h * Im
+        x = part1 @ np.linalg.inv( part2 + part3 ) @ b
+        
         # ||Ax - b||^2 + E^p(x) < epsilon
         normL2Old = normL2
         normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
