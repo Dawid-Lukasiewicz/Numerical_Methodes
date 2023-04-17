@@ -33,7 +33,7 @@ def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
             break
     return x
 
-def create_signal_X(M, N, maxValueCap=10):
+def create_mostly0_signal_X(M, N, maxValueCap=10):
     signalAmount = round(N/4)+1
     X = []
     print(X)
@@ -47,6 +47,18 @@ def create_signal_X(M, N, maxValueCap=10):
                 for i in randomIndex:
                     x[i] = np.random.random_sample()*maxValueCap
                 break
+        X.append(x)
+    X = np.asarray(X)
+    return X
+
+def create_random_Xn_signal(M, N, maxValueCap=10):
+    X = []
+    print(X)
+    for _ in range(M):
+        x = np.zeros(N)
+        for n in range(N):
+            if n < N:
+                x[n] = np.random.random_sample()*maxValueCap
         X.append(x)
     X = np.asarray(X)
     return X
