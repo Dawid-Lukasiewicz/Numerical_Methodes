@@ -60,8 +60,19 @@ def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
             break
     return x
 
-def create_mostly0_signal_X(M, N, maxValueCap=10):
-    signalAmount = round(N/4)+1
+def regularized_mfocuss_algorithm(A, b, X, p=1, h=1, epsilon=1e-5):
+
+    T, N = X.shape
+    normL2  = []
+    for t in range(T):
+        normL2.append( pow(np.linalg.norm( X[t] ), p) ) # Should be float_power probably, beacause p might not be integer
+    print("normL2 = ", normL2)
+    normL1 = np.sum(normL2)
+    print("normL1 = ", normL1)
+
+def create_mostly0_signal_X(M, N, nonZeroSignals=3, maxValueCap=10):
+    # signalAmount = round(N/4)+1
+    signalAmount = nonZeroSignals
     X = []
     print(X)
     for m in range(M):
