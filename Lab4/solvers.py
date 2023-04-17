@@ -36,6 +36,30 @@ def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
             break
     return x
 
+def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
+    M, N = A.shape
+    W = np.zeros([N, N], float)
+    if x.any() == None:
+        x = np.random.randn(N)
+
+    normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
+    while True:
+        # x^(1-(p/2))
+        x = np.float_power(np.fabs(x), 1-(p/2))
+        # Then input the x elements to diagonal W
+        np.fill_diagonal(W, x)
+
+        x = focuss_deriverative_multiplication_step(A, W, b, h)
+
+        x = sci.signal.wiener(x)
+        
+        # ||Ax - b||^2 + E^p(x) < epsilon
+        normL2Old = normL2
+        normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
+        if np.fabs(normL2 - normL2Old) < epsilon:
+            break
+    return x
+
 def create_mostly0_signal_X(M, N, maxValueCap=10):
     signalAmount = round(N/4)+1
     X = []
