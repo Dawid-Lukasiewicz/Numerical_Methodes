@@ -6,9 +6,13 @@ import numpy as np
 import scipy as sci
 import matrix_handler as mx
 
-def focuss_algorithm(A, x, b, p=1, h=1, epsilon=pow(10, -5)):
+
+def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
     M, N = A.shape
     W = np.zeros([N, N], float)
+    if x.any() == None:
+        x = np.random.randn(N)
+
     normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
     while True:
         # x^(1-(p/2))
