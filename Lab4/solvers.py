@@ -89,7 +89,6 @@ def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
 
         normL1Old = normL1
         _, normL1 = mfocuss_norms(X, p)
-        print(np.fabs(normL1 - normL1Old))
         if np.fabs(normL1 - normL1Old) < epsilon:
             break
     
@@ -99,7 +98,6 @@ def create_mostly0_signal_X(M, N, nonZeroSignals=3, maxValueCap=10):
     # signalAmount = round(N/4)+1
     signalAmount = nonZeroSignals
     X = []
-    print(X)
     for m in range(M):
         x = np.zeros(N)
         for n in range(signalAmount):
@@ -114,14 +112,12 @@ def create_mostly0_signal_X(M, N, nonZeroSignals=3, maxValueCap=10):
     X = np.asarray(X)
     return X
 
-def create_random_Xn_signal(M, N, maxValueCap=10):
+def create_random_Xn_signal(N, T, maxValueCap=10):
     X = []
-    print(X)
-    for _ in range(M):
-        x = np.zeros(N)
-        for n in range(N):
-            if n < N:
-                x[n] = np.random.random_sample()*maxValueCap
+    for _ in range(N):
+        x = np.zeros(T)
+        for t in range(T):
+            x[t] = np.random.random_sample()*maxValueCap
         X.append(x)
     X = np.asarray(X)
     return X
