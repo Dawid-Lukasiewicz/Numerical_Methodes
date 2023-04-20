@@ -64,34 +64,39 @@ def mfocuss_norms(X, p=1):
     T, _ = X.shape
     w = []
     for t in range(T):
-        w.append( np.linalg.norm( X[t] ) ) # w ||X_T^(k-1) ||_2
+        w.append( np.linalg.norm( X[t] ) ) # w || X_T(k-1) ||_2
 
     w = np.asarray(w)
-    normL2 = pow(w, p)
-    normL1 = np.sum(normL2)
-    normL1 = np.sum(normL2)
-    # print("w = ", w)
-    # print("normL2 = ", normL2)
-    # print("normL1 = ", normL1)
-
-    return w, normL1
+    
+    return w
 
 def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
+    N, T = X.shape
+    M, _ = A.shape
+    W = np.zeros([N, N], float)
+    x = mfocuss_norms(X)
+    if B.shape[0] > 1 :
+        b = mfocuss_norms(B)
 
-    M, N = A.shape
-    w, normL1 = mfocuss_norms(X, p)
-
-    W = np.diag(w)
+    normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum(np.float_power(np.abs(x), p))
 
     for _ in range(100):
-        X = W @ A.T @ np.linalg.inv( A @ A.T + np.multiply(h, np.diag(np.ones(M))) ) @ B
-        A = A @ W
+        # x^(1-(p/2))
+        x = np.float_power(x, 1-p/2)
+        # Then input the x elements to diagonal W
+        np.fill_diagonal(W, x)
 
-        normL1Old = normL1
-        _, normL1 = mfocuss_norms(X, p)
-        if np.fabs(normL1 - normL1Old) < epsilon:
+        part1 = np.linalg.matrix_power(W, 2) @ A.T
+        part2 = A @ np.linalg.matrix_power(W, 2) @ A.T
+        part3 = np.multiply(h, np.eye(M, M))
+        x = part1 @ np.linalg.inv(part2 + part3) @ b
+
+        normL2Old = normL2
+        normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum( np.float_power(np.abs(x), p) )
+        if np.fabs(normL2 - normL2Old) < epsilon:
             break
     
+    return x
 
 
 def create_mostly0_signal_X(M, N, nonZeroSignals=3, maxValueCap=10):
