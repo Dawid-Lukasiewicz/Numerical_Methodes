@@ -42,7 +42,7 @@ def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=1e-5):
     if x.any() == None:
         x = np.random.randn(N)
 
-    normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))
+    normL2 = (np.power(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))) / np.power(np.linalg.norm( A @ x - b ), 2)
 
     graphY = []
     graphX = []
@@ -60,7 +60,7 @@ def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=1e-5):
         
         # ||Ax - b||^2 + E^p(x) < epsilon
         normL2Old = normL2
-        normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))
+        normL2 = (np.power(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))) / np.power(np.linalg.norm( A @ x - b ), 2)
         if np.fabs(normL2 - normL2Old) < epsilon:
             break
 
@@ -87,7 +87,7 @@ def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
     else:
         b = B
 
-    normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum(np.float_power(np.abs(x), p))
+    normL2 = (np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum(np.float_power(np.abs(x), p))) / np.power(np.linalg.norm(b), 2)
 
     graphY = []
     graphX = []
@@ -105,7 +105,7 @@ def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
         x = part1 @ np.linalg.inv(part2 + part3) @ b
 
         normL2Old = normL2
-        normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum( np.float_power(np.abs(x), p) )
+        normL2 = (np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum(np.float_power(np.abs(x), p))) / np.power(np.linalg.norm(b), 2)
         if np.fabs(normL2 - normL2Old) < epsilon:
             break
     
