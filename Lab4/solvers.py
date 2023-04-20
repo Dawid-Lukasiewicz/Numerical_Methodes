@@ -14,7 +14,7 @@ def focuss_deriverative_multiplication_step(A, W, b, h=1):
     part3 = np.multiply(h, np.diag(np.ones(M))) # h * Im
     return part1 @ np.linalg.inv( part2 + part3 ) @ b
 
-def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
+def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=1e-5):
     M, N = A.shape
     W = np.zeros([N, N], float)
     if x.any() == None:
@@ -36,14 +36,19 @@ def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
             break
     return x
 
-def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
+def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=1e-5):
     M, N = A.shape
     W = np.zeros([N, N], float)
     if x.any() == None:
         x = np.random.randn(N)
 
-    normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
-    while True:
+    normL2 = (np.linalg.norm( A @ x - b ) + np.sum(np.float_power(abs(x), p))) / np.linalg.norm( A @ x - b )
+
+    graphY = []
+    graphX = []
+    for k in range(100):
+        graphX.append(k)
+        graphY.append(normL2)
         # x^(1-(p/2))
         x = np.float_power(np.fabs(x), 1-(p/2))
         # Then input the x elements to diagonal W
@@ -55,15 +60,62 @@ def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
         
         # ||Ax - b||^2 + E^p(x) < epsilon
         normL2Old = normL2
-        normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
+        normL2 = (np.linalg.norm( A @ x - b ) + np.sum(np.float_power(abs(x), p))) / np.linalg.norm( A @ x - b )
         if np.fabs(normL2 - normL2Old) < epsilon:
             break
-    return x
 
-def create_mostly0_signal_X(M, N, maxValueCap=10):
-    signalAmount = round(N/4)+1
+    graphXY = [graphX, graphY]
+    return x, graphXY
+
+def mfocuss_norms(X, p=1):
+    T, _ = X.shape
+    w = []
+    for t in range(T):
+        w.append( np.linalg.norm( X[t] ) ) # w || X_T(k-1) ||_2
+
+    w = np.asarray(w)
+    
+    return w
+
+def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
+    N, T = X.shape
+    M, _ = A.shape
+    W = np.zeros([N, N], float)
+    x = mfocuss_norms(X)
+    if B.ndim > 1:
+        b = mfocuss_norms(B)
+    else:
+        b = B
+
+    normL2 = (np.linalg.norm( A @ x - b ) + h * np.sum(np.float_power(np.abs(x), p))) / np.linalg.norm(b)
+
+    graphY = []
+    graphX = []
+    for k in range(100):
+        graphX.append(k)
+        graphY.append(normL2)
+        # x^(1-(p/2))
+        x = np.float_power(np.fabs(x), 1-(p/2))
+        # Then input the x elements to diagonal W
+        np.fill_diagonal(W, x)
+
+        part1 = np.linalg.matrix_power(W, 2) @ A.T
+        part2 = A @ np.linalg.matrix_power(W, 2) @ A.T
+        part3 = np.multiply(h, np.eye(M, M))
+        x = part1 @ np.linalg.inv(part2 + part3) @ b
+
+        normL2Old = normL2
+        normL2 = (np.linalg.norm( A @ x - b ) + h * np.sum(np.float_power(np.abs(x), p))) / np.linalg.norm(b)
+        if np.fabs(normL2 - normL2Old) < epsilon:
+            break
+    
+    graphXY = [graphX, graphY]
+    return x, graphXY
+
+def create_mostly0_signal_X(M, N, nonZeroSignals=3, maxValueCap=10):
+    # signalAmount = round(N/4)+1
+    signalAmount = nonZeroSignals
     X = []
-    print(X)
     for m in range(M):
         x = np.zeros(N)
         for n in range(signalAmount):
@@ -78,14 +130,12 @@ def create_mostly0_signal_X(M, N, maxValueCap=10):
     X = np.asarray(X)
     return X
 
-def create_random_Xn_signal(M, N, maxValueCap=10):
+def create_random_Xn_signal(N, T, maxValueCap=10):
     X = []
-    print(X)
-    for _ in range(M):
-        x = np.zeros(N)
-        for n in range(N):
-            if n < N:
-                x[n] = np.random.random_sample()*maxValueCap
+    for _ in range(N):
+        x = np.zeros(T)
+        for t in range(T):
+            x[t] = np.random.random_sample()*maxValueCap
         X.append(x)
     X = np.asarray(X)
     return X
