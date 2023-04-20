@@ -14,7 +14,7 @@ def focuss_deriverative_multiplication_step(A, W, b, h=1):
     part3 = np.multiply(h, np.diag(np.ones(M))) # h * Im
     return part1 @ np.linalg.inv( part2 + part3 ) @ b
 
-def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
+def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=1e-5):
     M, N = A.shape
     W = np.zeros([N, N], float)
     if x.any() == None:
@@ -36,14 +36,19 @@ def focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
             break
     return x
 
-def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
+def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=1e-5):
     M, N = A.shape
     W = np.zeros([N, N], float)
     if x.any() == None:
         x = np.random.randn(N)
 
     normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))
-    while True:
+
+    graphY = []
+    graphX = []
+    for k in range(100):
+        graphX.append(k)
+        graphY.append(normL2)
         # x^(1-(p/2))
         x = np.float_power(np.fabs(x), 1-(p/2))
         # Then input the x elements to diagonal W
@@ -58,7 +63,9 @@ def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
         normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))
         if np.fabs(normL2 - normL2Old) < epsilon:
             break
-    return x, normL2
+
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def mfocuss_norms(X, p=1):
     T, _ = X.shape
@@ -82,9 +89,13 @@ def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
 
     normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum(np.float_power(np.abs(x), p))
 
-    for _ in range(100):
+    graphY = []
+    graphX = []
+    for k in range(100):
+        graphX.append(k)
+        graphY.append(normL2)
         # x^(1-(p/2))
-        x = np.float_power(x, 1-p/2)
+        x = np.float_power(np.fabs(x), 1-(p/2))
         # Then input the x elements to diagonal W
         np.fill_diagonal(W, x)
 
@@ -98,8 +109,8 @@ def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
         if np.fabs(normL2 - normL2Old) < epsilon:
             break
     
-    return x, normL2
-
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def create_mostly0_signal_X(M, N, nonZeroSignals=3, maxValueCap=10):
     # signalAmount = round(N/4)+1
