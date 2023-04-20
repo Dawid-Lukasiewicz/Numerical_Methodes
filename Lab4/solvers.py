@@ -42,7 +42,7 @@ def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
     if x.any() == None:
         x = np.random.randn(N)
 
-    normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
+    normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))
     while True:
         # x^(1-(p/2))
         x = np.float_power(np.fabs(x), 1-(p/2))
@@ -55,10 +55,10 @@ def regularized_focuss_algorithm(A, b, x=None, p=1, h=1, epsilon=pow(10, -5)):
         
         # ||Ax - b||^2 + E^p(x) < epsilon
         normL2Old = normL2
-        normL2 = pow(np.linalg.norm( A @ x - b ), 2) + np.sum(pow(abs(x), p))
+        normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + np.sum(np.float_power(abs(x), p))
         if np.fabs(normL2 - normL2Old) < epsilon:
             break
-    return x
+    return x, normL2
 
 def mfocuss_norms(X, p=1):
     T, _ = X.shape
@@ -75,8 +75,10 @@ def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
     M, _ = A.shape
     W = np.zeros([N, N], float)
     x = mfocuss_norms(X)
-    if B.shape[0] > 1 :
+    if B.ndim > 1:
         b = mfocuss_norms(B)
+    else:
+        b = B
 
     normL2 = np.power(np.linalg.norm( A @ x - b ), 2) + h * np.sum(np.float_power(np.abs(x), p))
 
@@ -96,7 +98,7 @@ def regularized_mfocuss_algorithm(A, B, X, p=1, h=1, epsilon=1e-5):
         if np.fabs(normL2 - normL2Old) < epsilon:
             break
     
-    return x
+    return x, normL2
 
 
 def create_mostly0_signal_X(M, N, nonZeroSignals=3, maxValueCap=10):
