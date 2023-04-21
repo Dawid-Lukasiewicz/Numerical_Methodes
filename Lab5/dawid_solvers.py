@@ -2,20 +2,30 @@ import sys
 sys.path.append("../")
 from IPython.display import display, Math
 import os
+
 import numpy as np
 from numpy import matmul
 from numpy import dot
 from numpy import fabs
 from numpy import multiply
 from numpy.linalg import norm
+from numpy.linalg import eigvals
+
 import scipy as sci
 import matrix_handler as mx
+
+def greatest_singular_value(A):
+    return pow(max(eigvals(A)), 2)
+
 
 def landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-5):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
-    print(x)
+
+    """A potential condition defining if we should continue with the method"""
+    if alpha < 2/greatest_singular_value(A):
+        RuntimeError("alpha  should be less than 2/sigma^2")
 
     normL2 = norm(x)
     for k in range(maxIter):
