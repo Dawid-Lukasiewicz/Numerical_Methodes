@@ -7,6 +7,8 @@ x = np.array([4, 12, -4, 11])
 def residual_error(A, b, x):
     return np.linalg.norm(b - A@x)/np.linalg.norm(b)
 
+def solve_error(x, x_exact):
+    return np.linalg.norm(x - x_exact)/np.linalg.norm(x)
 
 def Jacobi_ST(A):
     S = np.diag(np.diag(A))
@@ -16,9 +18,9 @@ def Jacobi_ST(A):
 def Jacobi_iterative(A, b, x, epsilon = 1e-6):
     x_e = np.array([1, 2, 3, 4])
     S, T = Jacobi_ST(A)
-    while(np.linalg.norm(x - x_e)/np.linalg.norm(x_e) > epsilon):
+    while(solve_error(x, x_e) > epsilon):
         x = np.linalg.inv(S)@(T@x + b)
-        print(residual_error(A, b, x))
+        #print(residual_error(A, b, x))
     return x
 
 def GS_ST(A):
@@ -29,10 +31,9 @@ def GS_ST(A):
 def Gauss_Seidel_iterative(A, b, x, epsilon = 1e-6):
     x_e = np.array([1, 2, 3, 4])
     S, T = GS_ST(A)
-    print(residual_error(A, b, x))
-    while(np.linalg.norm(x - x_e)/np.linalg.norm(x_e) > epsilon):
+    while(solve_error(x, x_e) > epsilon):
         x = np.linalg.inv(S)@(T@x + b)
-        print(residual_error(A, b, x))
+        #print(residual_error(A, b, x))
     return x
 
 
