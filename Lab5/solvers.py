@@ -5,6 +5,7 @@ import os
 
 import numpy as np
 from numpy import fabs
+from numpy import diag
 from numpy.linalg import norm
 from numpy.linalg import eigvals
 from numpy.linalg import inv
@@ -71,4 +72,27 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-5):
         if residualError < epsilon:
             break
 
+    return x
+
+def sor_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-5):
+    M, N = A.shape
+    if x is None:
+        x = np.random.randn(N)
+
+    normL2 = norm(x)
+
+    for k in range(maxIter):
+        x_new = np.copy(x)
+        # x_new = (1 - omega) * x + (omega / diag(A)) @ (b - A @ x_new -)
+        for i in range(N):
+            x_new[i] = (1 - omega) * x[i] + (omega / A[i, i]) * (b[i] - np.dot(A[i, :i], x_new[:i]) - np.dot(A[i, i + 1:], x[i + 1:]))
+
+        normL2Old = normL2
+        normL2 = norm(x)
+        residualError = fabs(normL2 - normL2Old)/norm(b)
+        if residualError < epsilon:
+            break
+
+        x = np.copy(x_new)
+    
     return x
