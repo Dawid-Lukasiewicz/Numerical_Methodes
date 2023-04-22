@@ -14,6 +14,38 @@ from numpy.linalg import eigvals
 import scipy as sci
 import matrix_handler as mx
 
+def residual_error(A, b, x):
+    return np.linalg.norm(b - A@x)/np.linalg.norm(b)
+
+def solve_error(x, x_exact):
+    return np.linalg.norm(x - x_exact)/np.linalg.norm(x)
+
+def Jacobi_ST(A):
+    S = np.diag(np.diag(A))
+    T = S - A
+    return S, T
+
+def Jacobi_iterative(A, b, x, epsilon = 1e-6):
+    x_e = np.array([1, 2, 3, 4])
+    S, T = Jacobi_ST(A)
+    while(solve_error(x, x_e) > epsilon):
+        x = np.linalg.inv(S)@(T@x + b)
+        #print(residual_error(A, b, x))
+    return x
+
+def GS_ST(A):
+    S = np.tril(A)
+    T = S - A
+    return S, T
+
+def Gauss_Seidel_iterative(A, b, x, epsilon = 1e-6):
+    x_e = np.array([1, 2, 3, 4])
+    S, T = GS_ST(A)
+    while(solve_error(x, x_e) > epsilon):
+        x = np.linalg.inv(S)@(T@x + b)
+        #print(residual_error(A, b, x))
+    return x
+
 def greatest_singular_value(A):
     return pow(max(eigvals(A)), 2)
 
