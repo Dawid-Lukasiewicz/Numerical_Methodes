@@ -110,26 +110,6 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     graphXY = [graphX, graphY]
     return x, graphXY
 
-def LDU_decomposition(A):
-    M, N = A.shape
-    if M != N:
-        sys.exit("To decompose for L + D + U the matrix A must be square")
-    
-    L = np.zeros((N, N))
-    U = np.zeros((N, N))
-    for r in range(N):
-        # Perform LUP decomposition
-        for c in range(r):
-            # Getting values on upper triangular matrix 
-            L[r][c] = A[r][c]
-
-        for c in range(r+1, N):
-            # Getting values on lower triangular matrix 
-            U[r][c] = A[r][c]
-
-    D = diag(diag(A))
-    return L, D, U
-
 def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
@@ -139,7 +119,13 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
     # If A is SPD then SOR will converge for any omega witih (0, 2)
     # and for any initial guess x0
 
-    L, D, U = LDU_decomposition(A)
+    # Get matrix of diagonal elements from A
+    D = diag(diag(A))
+    # Get matrix of lower elements from A
+    L = np.tril(A) - D
+    # Get matrix of upper elements from A
+    U = np.triu(A) - D
+
     S = L + D/omega
     T = -(U + ((omega-1)*D)/omega)
 
