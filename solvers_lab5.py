@@ -24,26 +24,57 @@ def Jacobi_ST(A):
     T = S - A
     return S, T
 
-def Jacobi_iterative(A, b, x, epsilon = 1e-7):
-    x_e = np.array([1, 2, 3, 4])
+def Jacobi_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
+    M, N = A.shape
+    if x is None:
+        x = np.random.randn(N)
+
     S, T = Jacobi_ST(A)
-    while(solve_error(x, x_e) > epsilon):
+    normL2 = residual_error(A, b, x)
+
+    graphY = []
+    graphX = []
+    for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
+
         x = inv(S)@(T@x + b)
-        #print(residual_error(A, b, x))
-    return x
+
+        normL2Old = normL2
+        normL2 = residual_error(A, b, x)
+        if fabs(normL2 - normL2Old) < epsilon:
+            break
+
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def GS_ST(A):
     S = np.tril(A)
     T = S - A
     return S, T
 
-def Gauss_Seidel_iterative(A, b, x, epsilon = 1e-7):
-    x_e = np.array([1, 2, 3, 4])
+def Gauss_Seidel_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
+    M, N = A.shape
+    if x is None:
+        x = np.random.randn(N)
+
     S, T = GS_ST(A)
-    while(solve_error(x, x_e) > epsilon):
+    normL2 = residual_error(A, b, x)
+    graphY = []
+    graphX = []
+    for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
+
         x = inv(S)@(T@x + b)
-        #print(residual_error(A, b, x))
-    return x
+
+        normL2Old = normL2
+        normL2 = residual_error(A, b, x)
+        if fabs(normL2 - normL2Old) < epsilon:
+            break
+
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def greatest_singular_value(A):
     return pow(max(eigvals(A)), 2)
