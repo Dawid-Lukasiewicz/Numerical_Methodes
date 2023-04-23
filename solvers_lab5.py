@@ -10,6 +10,8 @@ from numpy.linalg import norm
 from numpy.linalg import eigvals
 from numpy.linalg import inv
 
+from solvers_lab1 import permutation_matrix
+
 import scipy as sci
 import matrix_handler as mx
 
@@ -73,6 +75,30 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-5):
             break
 
     return x
+
+def LDU_decomposition(A):
+    M, N = A.shape
+    if M != N:
+        sys.exit("To decompose for L + D + U the matrix A must be square")
+    
+    L = np.zeros((N, N))
+    U = np.zeros((N, N))
+
+    for r in range(N):
+        # Perform LUP decomposition
+        for c in range(r):
+            # Getting values on upper triangular matrix 
+            L[r][c] = A[r][c]
+
+        for c in range(r+1, N):
+            # Getting values on lower triangular matrix 
+            U[r][c] = A[r][c]
+
+    D = diag(diag(A))
+    print("L =\n", L)
+    print("D =\n", D)
+    print("U =\n", U)
+    return L, D, U
 
 def sor_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-5):
     M, N = A.shape
