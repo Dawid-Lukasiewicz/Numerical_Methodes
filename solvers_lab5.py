@@ -56,7 +56,7 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-5):
 
     """A potential condition defining if we should continue with the method"""
     if alpha < 2/greatest_singular_value(A):
-        RuntimeError("alpha  should be less than 2/sigma^2")
+        sys.exit("alpha should be less than 2/sigma^2")
 
     normL2 = norm(x)
     for k in range(maxIter):
