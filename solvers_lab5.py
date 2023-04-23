@@ -10,8 +10,6 @@ from numpy.linalg import norm
 from numpy.linalg import eigvals
 from numpy.linalg import inv
 
-from solvers_lab1 import permutation_matrix
-
 import scipy as sci
 import matrix_handler as mx
 
@@ -83,7 +81,6 @@ def LDU_decomposition(A):
     
     L = np.zeros((N, N))
     U = np.zeros((N, N))
-
     for r in range(N):
         # Perform LUP decomposition
         for c in range(r):
@@ -95,30 +92,25 @@ def LDU_decomposition(A):
             U[r][c] = A[r][c]
 
     D = diag(diag(A))
-    print("L =\n", L)
-    print("D =\n", D)
-    print("U =\n", U)
     return L, D, U
 
-def sor_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-5):
+def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-5):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
 
+    L, D, U = LDU_decomposition(A)
+    S = L + D/omega
+    T = -(U + ((omega-1)*D)/omega)
+
     normL2 = norm(x)
 
     for k in range(maxIter):
-        x_new = np.copy(x)
-        # x_new = (1 - omega) * x + (omega / diag(A)) @ (b - A @ x_new -)
-        for i in range(N):
-            x_new[i] = (1 - omega) * x[i] + (omega / A[i, i]) * (b[i] - np.dot(A[i, :i], x_new[:i]) - np.dot(A[i, i + 1:], x[i + 1:]))
-
+        x = inv(S)@(T@x + b)
         normL2Old = normL2
         normL2 = norm(x)
         residualError = fabs(normL2 - normL2Old)/norm(b)
         if residualError < epsilon:
             break
 
-        x = np.copy(x_new)
-    
     return x
