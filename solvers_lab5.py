@@ -164,7 +164,7 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
 
         r = b - A @ x
         alpha = (r @ r) / ((A @ r) @ r)
-        x += alpha * r
+        x = x + (alpha * r)
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
@@ -190,7 +190,7 @@ def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
 
         for i in range(N):
             alpha = (b[i] - np.dot(A[i, :], x)) / np.linalg.norm(A[i, :])**2  # Compute the step size
-            x += alpha * A[i, :]  # Update the solution
+            x = x + (alpha * A[i, :])  # Update the solution
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
