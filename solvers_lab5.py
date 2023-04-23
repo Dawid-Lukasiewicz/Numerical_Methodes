@@ -59,7 +59,11 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
         sys.exit("alpha should be less than 2/sigma^2")
 
     normL2 = norm(x)
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
         # Should be: 
         # x(k+1) = x(k) + alpha * A^T * (b - A * x)
         # but convergence never occurs if A^T
@@ -72,7 +76,8 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
         if residualError < epsilon:
             break
 
-    return x
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def LDU_decomposition(A):
     M, N = A.shape
@@ -109,15 +114,19 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
 
     normL2 = norm(x)
 
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
         x = inv(S)@(T@x + b)
         normL2Old = normL2
         normL2 = norm(x)
         residualError = fabs(normL2 - normL2Old)/norm(b)
         if residualError < epsilon:
             break
-
-    return x
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 """Steepest descent - an iterative method"""
 def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
@@ -128,8 +137,11 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
     # Should check if matrix A is SPD - Symmetric Positive Definit
 
     normL2 = norm(x)
-
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
         r = b - A @ x
         alpha = (r @ r) / ((A @ r) @ r)
         x += alpha * r
@@ -140,7 +152,8 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
         if residualError < epsilon:
             break
 
-    return x
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
     M, N = A.shape
@@ -149,7 +162,11 @@ def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
 
     normL2 = norm(x)
 
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
         for i in range(N):
             alpha = (b[i] - np.dot(A[i, :], x)) / np.linalg.norm(A[i, :])**2  # Compute the step size
             x += alpha * A[i, :]  # Update the solution
@@ -160,4 +177,5 @@ def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
         if residualError < epsilon:
             break
 
-    return x
+    graphXY = [graphX, graphY]
+    return x, graphXY
