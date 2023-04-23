@@ -58,7 +58,7 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     if alpha < 2/greatest_singular_value(A):
         sys.exit("alpha should be less than 2/sigma^2")
 
-    normL2 = norm(x)
+    normL2 = norm(b - A @ x)/norm(b)
     graphY = []
     graphX = []
     for k in range(maxIter):
@@ -71,8 +71,8 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
         x = x + alpha * (b - A @ x)
 
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = norm(b - A @ x)/norm(b)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
 
@@ -112,17 +112,19 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
     S = L + D/omega
     T = -(U + ((omega-1)*D)/omega)
 
-    normL2 = norm(x)
+    normL2 = norm(b - A @ x)/norm(b)
 
     graphY = []
     graphX = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
+
         x = inv(S)@(T@x + b)
+
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = norm(b - A @ x)/norm(b)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
     graphXY = [graphX, graphY]
@@ -136,19 +138,20 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
 
     # Should check if matrix A is SPD - Symmetric Positive Definit
 
-    normL2 = norm(x)
+    normL2 = norm(b - A @ x)/norm(b)
     graphY = []
     graphX = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
+
         r = b - A @ x
         alpha = (r @ r) / ((A @ r) @ r)
         x += alpha * r
 
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = norm(b - A @ x)/norm(b)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
 
@@ -160,20 +163,21 @@ def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
     if x is None:
         x = np.random.randn(N)
 
-    normL2 = norm(x)
+    normL2 = norm(b - A @ x)/norm(b)
 
     graphY = []
     graphX = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
+
         for i in range(N):
             alpha = (b[i] - np.dot(A[i, :], x)) / np.linalg.norm(A[i, :])**2  # Compute the step size
             x += alpha * A[i, :]  # Update the solution
 
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = norm(b - A @ x)/norm(b)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
 
