@@ -8,13 +8,13 @@ import scipy as sci
 from matrix_handler import random_aug_matrix
 from matrix_handler import print_augm_matrix
 from matrix_handler import import_matrix_from_file
-from solvers import gauss_elimination
-from solvers import back_substitution
-from solvers import forward_substitution
-from solvers import lup_decompozition
-from solvers import permutation_matrix
-from solvers import gauss_elimination_partial_pivot
-from solvers import qr_with_gramm_schmidt
+from solvers_lab1 import gauss_elimination
+from solvers_lab1 import back_substitution
+from solvers_lab1 import forward_substitution
+from solvers_lab1 import lup_decompozition
+from solvers_lab1 import permutation_matrix
+from solvers_lab1 import gauss_elimination_partial_pivot
+from solvers_lab1 import qr_with_gramm_schmidt
 
 zadania = "zadania"
 
