@@ -114,3 +114,26 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-5):
             break
 
     return x
+
+"""Steepest descent - an iterative method"""
+def SD_method(A, b, x=None, maxIter=100, epsilon=1e-5):
+    M, N = A.shape
+    if x is None:
+        x = np.random.randn(N)
+
+    # Should check if matrix A is SPD - Symmetric Positive Definit
+
+    normL2 = norm(x)
+
+    for k in range(maxIter):
+        r = b - A @ x
+        alpha = (r @ r) / ((A @ r) @ r)
+        x += alpha * r
+
+        normL2Old = normL2
+        normL2 = norm(x)
+        residualError = fabs(normL2 - normL2Old)/norm(b)
+        if residualError < epsilon:
+            break
+
+    return x
