@@ -24,26 +24,57 @@ def Jacobi_ST(A):
     T = S - A
     return S, T
 
-def Jacobi_iterative(A, b, x, epsilon = 1e-7):
-    x_e = np.array([1, 2, 3, 4])
+def Jacobi_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
+    M, N = A.shape
+    if x is None:
+        x = np.random.randn(N)
+
     S, T = Jacobi_ST(A)
-    while(solve_error(x, x_e) > epsilon):
+    normL2 = residual_error(A, b, x)
+
+    graphY = []
+    graphX = []
+    for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
+
         x = inv(S)@(T@x + b)
-        #print(residual_error(A, b, x))
-    return x
+
+        normL2Old = normL2
+        normL2 = residual_error(A, b, x)
+        if fabs(normL2 - normL2Old) < epsilon:
+            break
+
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def GS_ST(A):
     S = np.tril(A)
     T = S - A
     return S, T
 
-def Gauss_Seidel_iterative(A, b, x, epsilon = 1e-7):
-    x_e = np.array([1, 2, 3, 4])
+def Gauss_Seidel_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
+    M, N = A.shape
+    if x is None:
+        x = np.random.randn(N)
+
     S, T = GS_ST(A)
-    while(solve_error(x, x_e) > epsilon):
+    normL2 = residual_error(A, b, x)
+    graphY = []
+    graphX = []
+    for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
+
         x = inv(S)@(T@x + b)
-        #print(residual_error(A, b, x))
-    return x
+
+        normL2Old = normL2
+        normL2 = residual_error(A, b, x)
+        if fabs(normL2 - normL2Old) < epsilon:
+            break
+
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def greatest_singular_value(A):
     return pow(max(eigvals(A)), 2)
@@ -58,8 +89,12 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     if alpha < 2/greatest_singular_value(A):
         sys.exit("alpha should be less than 2/sigma^2")
 
-    normL2 = norm(x)
+    normL2 = residual_error(A, b, x)
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
         # Should be: 
         # x(k+1) = x(k) + alpha * A^T * (b - A * x)
         # but convergence never occurs if A^T
@@ -67,32 +102,13 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
         x = x + alpha * (b - A @ x)
 
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = residual_error(A, b, x)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
 
-    return x
-
-def LDU_decomposition(A):
-    M, N = A.shape
-    if M != N:
-        sys.exit("To decompose for L + D + U the matrix A must be square")
-    
-    L = np.zeros((N, N))
-    U = np.zeros((N, N))
-    for r in range(N):
-        # Perform LUP decomposition
-        for c in range(r):
-            # Getting values on upper triangular matrix 
-            L[r][c] = A[r][c]
-
-        for c in range(r+1, N):
-            # Getting values on lower triangular matrix 
-            U[r][c] = A[r][c]
-
-    D = diag(diag(A))
-    return L, D, U
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
     M, N = A.shape
@@ -103,21 +119,33 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
     # If A is SPD then SOR will converge for any omega witih (0, 2)
     # and for any initial guess x0
 
-    L, D, U = LDU_decomposition(A)
+    # Get matrix of diagonal elements from A
+    D = diag(diag(A))
+    # Get matrix of lower elements from A
+    L = np.tril(A) - D
+    # Get matrix of upper elements from A
+    U = np.triu(A) - D
+
     S = L + D/omega
     T = -(U + ((omega-1)*D)/omega)
 
-    normL2 = norm(x)
+    normL2 = residual_error(A, b, x)
 
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
+
         x = inv(S)@(T@x + b)
+
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = residual_error(A, b, x)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
-
-    return x
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 """Steepest descent - an iterative method"""
 def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
@@ -127,37 +155,48 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
 
     # Should check if matrix A is SPD - Symmetric Positive Definit
 
-    normL2 = norm(x)
-
+    normL2 = residual_error(A, b, x)
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
+
         r = b - A @ x
         alpha = (r @ r) / ((A @ r) @ r)
-        x += alpha * r
+        x = x + (alpha * r)
 
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = residual_error(A, b, x)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
 
-    return x
+    graphXY = [graphX, graphY]
+    return x, graphXY
 
 def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
 
-    normL2 = norm(x)
+    normL2 = residual_error(A, b, x)
 
+    graphY = []
+    graphX = []
     for k in range(maxIter):
+        graphX.append(k)
+        graphY.append(normL2)
+
         for i in range(N):
             alpha = (b[i] - np.dot(A[i, :], x)) / np.linalg.norm(A[i, :])**2  # Compute the step size
-            x += alpha * A[i, :]  # Update the solution
+            x = x + (alpha * A[i, :])  # Update the solution
 
         normL2Old = normL2
-        normL2 = norm(x)
-        residualError = fabs(normL2 - normL2Old)/norm(b)
+        normL2 = residual_error(A, b, x)
+        residualError = fabs(normL2 - normL2Old)
         if residualError < epsilon:
             break
 
-    return x
+    graphXY = [graphX, graphY]
+    return x, graphXY
