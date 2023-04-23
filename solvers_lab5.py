@@ -24,7 +24,7 @@ def Jacobi_ST(A):
     T = S - A
     return S, T
 
-def Jacobi_iterative(A, b, x, epsilon = 1e-6):
+def Jacobi_iterative(A, b, x, epsilon = 1e-7):
     x_e = np.array([1, 2, 3, 4])
     S, T = Jacobi_ST(A)
     while(solve_error(x, x_e) > epsilon):
@@ -37,7 +37,7 @@ def GS_ST(A):
     T = S - A
     return S, T
 
-def Gauss_Seidel_iterative(A, b, x, epsilon = 1e-6):
+def Gauss_Seidel_iterative(A, b, x, epsilon = 1e-7):
     x_e = np.array([1, 2, 3, 4])
     S, T = GS_ST(A)
     while(solve_error(x, x_e) > epsilon):
@@ -49,7 +49,7 @@ def greatest_singular_value(A):
     return pow(max(eigvals(A)), 2)
 
 
-def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-5):
+def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -94,10 +94,14 @@ def LDU_decomposition(A):
     D = diag(diag(A))
     return L, D, U
 
-def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-5):
+def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
+
+    # Should check if matrix A is SPD - Symmetric Positive Definit
+    # If A is SPD then SOR will converge for any omega witih (0, 2)
+    # and for any initial guess x0
 
     L, D, U = LDU_decomposition(A)
     S = L + D/omega
@@ -116,7 +120,7 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-5):
     return x
 
 """Steepest descent - an iterative method"""
-def SD_method(A, b, x=None, maxIter=100, epsilon=1e-5):
+def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -129,6 +133,26 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-5):
         r = b - A @ x
         alpha = (r @ r) / ((A @ r) @ r)
         x += alpha * r
+
+        normL2Old = normL2
+        normL2 = norm(x)
+        residualError = fabs(normL2 - normL2Old)/norm(b)
+        if residualError < epsilon:
+            break
+
+    return x
+
+def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
+    M, N = A.shape
+    if x is None:
+        x = np.random.randn(N)
+
+    normL2 = norm(x)
+
+    for k in range(maxIter):
+        for i in range(N):
+            alpha = (b[i] - np.dot(A[i, :], x)) / np.linalg.norm(A[i, :])**2  # Compute the step size
+            x += alpha * A[i, :]  # Update the solution
 
         normL2Old = normL2
         normL2 = norm(x)
