@@ -18,6 +18,7 @@ def Jacobi_ST(A):
 def Jacobi_iterative(A, b, x, epsilon = 1e-6):
     x_e = np.array([1, 2, 3, 4])
     S, T = Jacobi_ST(A)
+    
     while(solve_error(x, x_e) > epsilon):
         x = np.linalg.inv(S)@(T@x + b)
         #print(residual_error(A, b, x))
