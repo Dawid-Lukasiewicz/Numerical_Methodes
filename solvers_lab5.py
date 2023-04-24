@@ -200,8 +200,3 @@ def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
 
     graphXY = [graphX, graphY]
     return x, graphXY
-
-def Grand_Solver(A, b, x, algorithms):
-    for i in algorithms:
-        print("1\n")
-    return 0
