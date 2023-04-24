@@ -24,7 +24,7 @@ def Jacobi_ST(A):
     T = S - A
     return S, T
 
-def Jacobi_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
+def Jacobi_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -34,6 +34,7 @@ def Jacobi_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
 
     graphY = []
     graphX = []
+    graphZ = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -42,10 +43,12 @@ def Jacobi_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
+        if x_exact is not None:
+            graphZ.append(solve_error(x, x_exact))
         if fabs(normL2 - normL2Old) < epsilon:
             break
 
-    graphXY = [graphX, graphY]
+    graphXY = [graphX, graphY, graphZ]
     return x, graphXY
 
 def GS_ST(A):
@@ -53,7 +56,7 @@ def GS_ST(A):
     T = S - A
     return S, T
 
-def Gauss_Seidel_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
+def Gauss_Seidel_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -62,6 +65,7 @@ def Gauss_Seidel_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
     normL2 = residual_error(A, b, x)
     graphY = []
     graphX = []
+    graphZ = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -70,17 +74,19 @@ def Gauss_Seidel_iterative(A, b, x, maxIter=100, epsilon = 1e-7):
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
+        if x_exact is not None:
+            graphZ.append(solve_error(x, x_exact))
         if fabs(normL2 - normL2Old) < epsilon:
             break
 
-    graphXY = [graphX, graphY]
+    graphXY = [graphX, graphY, graphZ]
     return x, graphXY
 
 def greatest_singular_value(A):
     return pow(max(eigvals(A)), 2)
 
 
-def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
+def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -92,6 +98,7 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     normL2 = residual_error(A, b, x)
     graphY = []
     graphX = []
+    graphZ = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -104,13 +111,15 @@ def Landweber(A, b, x=None, alpha=0.5, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         residualError = fabs(normL2 - normL2Old)
+        if x_exact is not None:
+            graphZ.append(solve_error(x, x_exact))
         if residualError < epsilon:
             break
 
-    graphXY = [graphX, graphY]
+    graphXY = [graphX, graphY, graphZ]
     return x, graphXY
 
-def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
+def SOR_method(A, b, x=None, x_exact = None, omega=0.2, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -133,6 +142,7 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
 
     graphY = []
     graphX = []
+    graphZ = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -142,13 +152,15 @@ def SOR_method(A, b, x=None, omega=0.2, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         residualError = fabs(normL2 - normL2Old)
+        if x_exact is not None:
+            graphZ.append(solve_error(x, x_exact))
         if residualError < epsilon:
             break
-    graphXY = [graphX, graphY]
+    graphXY = [graphX, graphY, graphZ]
     return x, graphXY
 
 """Steepest descent - an iterative method"""
-def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
+def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -158,6 +170,7 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
     normL2 = residual_error(A, b, x)
     graphY = []
     graphX = []
+    graphZ = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -169,13 +182,15 @@ def SD_method(A, b, x=None, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         residualError = fabs(normL2 - normL2Old)
+        if x_exact is not None:
+            graphZ.append(solve_error(x, x_exact))
         if residualError < epsilon:
             break
 
-    graphXY = [graphX, graphY]
+    graphXY = [graphX, graphY, graphZ]
     return x, graphXY
 
-def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
+def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -184,6 +199,7 @@ def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
 
     graphY = []
     graphX = []
+    graphZ = []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -195,8 +211,10 @@ def Kaczmarz_algorithm(A, b, x=None, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         residualError = fabs(normL2 - normL2Old)
+        if x_exact is not None:
+            graphZ.append(solve_error(x, x_exact))
         if residualError < epsilon:
             break
 
-    graphXY = [graphX, graphY]
+    graphXY = [graphX, graphY, graphZ]
     return x, graphXY
