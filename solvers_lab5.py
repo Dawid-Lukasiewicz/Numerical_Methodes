@@ -10,6 +10,8 @@ from numpy.linalg import norm
 from numpy.linalg import eigvals
 from numpy.linalg import inv
 
+import matplotlib.pyplot as plt
+
 import scipy as sci
 import matrix_handler as mx
 
@@ -35,7 +37,7 @@ def Jacobi_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
     S, T = Jacobi_ST(A)
     normL2 = residual_error(A, b, x)
     
-    print(greatest_singular_value(inv(S)@T))
+    # print(greatest_singular_value(inv(S)@T))
 
     graphY = []
     graphX = []
@@ -71,7 +73,7 @@ def Gauss_Seidel_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
     S, T = GS_ST(A)
     normL2 = residual_error(A, b, x)
     
-    print(greatest_singular_value(inv(S)@T))
+    # print(greatest_singular_value(inv(S)@T))
     
     if greatest_singular_value(inv(S)@T) > 1:
         return [], []
@@ -94,9 +96,6 @@ def Gauss_Seidel_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
 
     graphXY = [graphX, graphY, graphZ]
     return x, graphXY
-
-
-
 
 def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     M, N = A.shape
@@ -150,7 +149,7 @@ def SOR_method(A, b, x=None, x_exact = None, omega=0.2, maxIter=100, epsilon=1e-
     S = L + D/omega
     T = -(U + ((omega-1)*D)/omega)
 
-    print(greatest_singular_value(inv(S)@T))
+    # print(greatest_singular_value(inv(S)@T))
     
     if greatest_singular_value(inv(S)@T) > 1:
         return [], []
@@ -235,3 +234,23 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
 
     graphXY = [graphX, graphY, graphZ]
     return x, graphXY
+
+def Grand_Solverr(A, b, x0, x_e, algorithmss):
+    xv = []
+    graphv = []
+    fig, ax = plt.subplots()
+    colors = ["orange", "black", "blue", "red", "green", "pink"]
+    plt.figure(1)
+    for i in algorithmss:
+        x, graph = i(A, b, x0, x_exact=x_e)
+        ax.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker="*", label=str(i.__name__), linestyle="--")
+        xv.append(x)
+        graphv.append(graph)
+    plt.legend(loc="upper right")
+    plt.title("Porównanie metod iteracyjnych")
+    plt.ylabel("błąd residualny")
+    plt.xlabel("iteracja k")
+    plt.show()
+
+    return xv, graphv
+    
