@@ -230,7 +230,7 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
     return x, graphXY
 
 def Grand_Solverr(A, b, x0, x_e, algorithmss):
-    # xv = []
+    xv = []
     # graphv = []
     colors = ["black", "orange", "blue", "red", "green", "pink"]
     markerList = ["^", ".", "1", "|", "+", "x"]
@@ -242,7 +242,7 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
         plt.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
         plt.figure(2)
         plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
-        # xv.append(x)
+        xv.append(x)
         # graphv.append(graph)
 
     plt.figure(1)    
@@ -258,5 +258,6 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
     plt.xlabel("iteracja k")
     plt.show()
 
+    return xv
     # return xv, graphv
     

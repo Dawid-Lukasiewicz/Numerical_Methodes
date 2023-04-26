@@ -19,7 +19,7 @@ def gauss_elimination(inputMatrix, size):
 
             inputMatrix[k] = inputMatrix[k] - ratio * inputMatrix[r]
     
-    print_augm_matrix(inputMatrix, size)
+    # print_augm_matrix(inputMatrix, size)
     return True
 
 def gauss_elimination_partial_pivot(inputMatrix, size):
