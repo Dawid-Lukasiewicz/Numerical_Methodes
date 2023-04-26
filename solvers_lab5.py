@@ -230,15 +230,18 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
     return x, graphXY
 
 def Grand_Solverr(A, b, x0, x_e, algorithmss):
-    xv = []
-    graphv = []
-    colors = ["orange", "black", "blue", "red", "green", "pink"]
+    # xv = []
+    # graphv = []
+    colors = ["black", "orange", "blue", "red", "green", "pink"]
+    markerList = ["^", ".", "1", "|", "+", "x"]
     for i in algorithmss:
         x, graph = i(A, b, x0, x_exact=x_e)
+        if not len(x):
+            continue
         plt.figure(1)
-        plt.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker="*", label=str(i.__name__), linestyle="--")
+        plt.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
         plt.figure(2)
-        plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=".", label=str(i.__name__), linestyle="--")
+        plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
         # xv.append(x)
         # graphv.append(graph)
 
