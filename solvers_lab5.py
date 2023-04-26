@@ -33,10 +33,16 @@ def Jacobi_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
+    Flag = 0
 
     S, T = Jacobi_ST(A)
     if greatest_singular_value(inv(S)@T) > 1:
         return [], []
+    
+    """Check diagonal dominance"""
+    for i in range(N):
+        if np.abs(A[i,i]) <= np.sum(np.abs(A[i,:])) - np.abs(A[i,i]):
+            Flag = 1
     
     normL2 = residual_error(A, b, x)
 
@@ -51,6 +57,9 @@ def Jacobi_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
+        """If there are conditions convergence may not occur check the norm value"""
+        if Flag and normL2 > normL2Old + 100:
+            return [], []
         if x_exact is not None:
             graphZ.append(solve_error(x, x_exact))
         if fabs(normL2 - normL2Old) < epsilon:
@@ -138,7 +147,7 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         """If there are conditions convergence may not occur check the norm value"""
-        if Flag and normL2 > normL2Old:
+        if Flag and normL2 > normL2Old + 100:
             return [], []
         residualError = fabs(normL2 - normL2Old)
         if x_exact is not None:
@@ -223,7 +232,7 @@ def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         """If there are conditions convergence may not occur check the norm value"""
-        if Flag and normL2 > normL2Old:
+        if Flag and normL2 > normL2Old + 100:
             return [], []
         
         residualError = fabs(normL2 - normL2Old)
@@ -275,8 +284,9 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
             continue
         plt.figure(1)
         plt.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
-        plt.figure(2)
-        plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
+        if x_e is not None:
+            plt.figure(2)
+            plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
         xv.append(x)
         # graphv.append(graph)
 
@@ -286,13 +296,21 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
     plt.ylabel("błąd residualny")
     plt.xlabel("iteracja k")
 
-    plt.figure(2)
-    plt.legend(loc="upper right")
-    plt.title("Porównanie metod iteracyjnych - wskazania błędu rozwiązania")
-    plt.ylabel("błąd rozwiązania")
-    plt.xlabel("iteracja k")
+    if x_e is not None:
+        plt.figure(2)
+        plt.legend(loc="upper right")
+        plt.title("Porównanie metod iteracyjnych - wskazania błędu rozwiązania")
+        plt.ylabel("błąd rozwiązania")
+        plt.xlabel("iteracja k")
     plt.show()
 
     return xv
     # return xv, graphv
+
+def Hilbert_matrix(N):
+    H = np.zeros([N, N])
+    for r in range(N):
+        for c in range(N):
+            H[r, c] = 1/(r+1+c)
+    return H
     
