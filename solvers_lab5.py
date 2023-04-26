@@ -101,7 +101,21 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
 
     """A potential condition defining if we should continue with the method"""
     if alpha < 2/greatest_singular_value(A):
-        sys.exit("alpha should be less than 2/sigma^2")
+        return [], []
+    
+    """Check if matrix A is SPD - Symmetric Positive Definit"""
+    if np.allclose(A, A.T):
+        return [], []
+    
+    """Spectral norm of A should be >= 1
+    Otherwise convergence may be slow or not guaranteed"""
+    if norm(A, ord=2) >= 1:
+        return [], []
+    
+    """Condition number of matrix A should be > 1
+    Otherwise convergence may be slow or not guaranteed"""
+    if np.linalg.cond(A) > 1:
+        return[], []
 
     normL2 = residual_error(A, b, x)
     graphY = []
@@ -175,7 +189,12 @@ def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
     if x is None:
         x = np.random.randn(N)
 
-    # Should check if matrix A is SPD - Symmetric Positive Definit
+    # Check if matrix A is SPD - Symmetric Positive Definit
+    if np.allclose(A, A.T):
+        return [], []
+    
+    if min(eigvals(A)) < 0:
+        return [], []
 
     normL2 = residual_error(A, b, x)
     graphY = []
