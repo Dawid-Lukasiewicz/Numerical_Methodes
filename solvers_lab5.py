@@ -35,15 +35,14 @@ def Jacobi_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
         x = np.random.randn(N)
 
     S, T = Jacobi_ST(A)
-    normL2 = residual_error(A, b, x)
+    if greatest_singular_value(inv(S)@T) > 1:
+        return [], []
     
-    # print(greatest_singular_value(inv(S)@T))
+    normL2 = residual_error(A, b, x)
 
     graphY = []
     graphX = []
     graphZ = []
-    if greatest_singular_value(inv(S)@T) > 1:
-        return [], []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -71,12 +70,10 @@ def Gauss_Seidel_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
         x = np.random.randn(N)
 
     S, T = GS_ST(A)
-    normL2 = residual_error(A, b, x)
-    
-    # print(greatest_singular_value(inv(S)@T))
-    
     if greatest_singular_value(inv(S)@T) > 1:
         return [], []
+    
+    normL2 = residual_error(A, b, x)
     
     graphY = []
     graphX = []
@@ -130,7 +127,7 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     graphXY = [graphX, graphY, graphZ]
     return x, graphXY
 
-def SOR_method(A, b, x=None, x_exact = None, omega=0.2, maxIter=100, epsilon=1e-7):
+def SOR_method(A, b, x=None, x_exact = None, omega=1.2, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -148,9 +145,6 @@ def SOR_method(A, b, x=None, x_exact = None, omega=0.2, maxIter=100, epsilon=1e-
 
     S = L + D/omega
     T = -(U + ((omega-1)*D)/omega)
-
-    # print(greatest_singular_value(inv(S)@T))
-    
     if greatest_singular_value(inv(S)@T) > 1:
         return [], []
     
@@ -221,7 +215,7 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
         graphY.append(normL2)
 
         for i in range(N):
-            alpha = (b[i] - np.dot(A[i, :], x)) / np.linalg.norm(A[i, :])**2  # Compute the step size
+            alpha = (b[i] - np.dot(A[i, :], x)) / norm(A[i, :])**2  # Compute the step size
             x = x + (alpha * A[i, :])  # Update the solution
 
         normL2Old = normL2
@@ -245,8 +239,8 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
         plt.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker="*", label=str(i.__name__), linestyle="--")
         plt.figure(2)
         plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=".", label=str(i.__name__), linestyle="--")
-        xv.append(x)
-        graphv.append(graph)
+        # xv.append(x)
+        # graphv.append(graph)
 
     plt.figure(1)    
     plt.legend(loc="upper right")
@@ -261,5 +255,5 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
     plt.xlabel("iteracja k")
     plt.show()
 
-    return xv, graphv
+    # return xv, graphv
     
