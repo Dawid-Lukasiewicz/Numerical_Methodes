@@ -58,7 +58,7 @@ def Jacobi_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         """If there are conditions convergence may not occur check the norm value"""
-        if Flag and normL2 > normL2Old + 100:
+        if Flag and normL2 > normL2Old + 2:
             return [], []
         if x_exact is not None:
             graphZ.append(solve_error(x, x_exact))
@@ -147,7 +147,7 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         """If there are conditions convergence may not occur check the norm value"""
-        if Flag and normL2 > normL2Old + 100:
+        if Flag and normL2 > normL2Old + 2:
             return [], []
         residualError = fabs(normL2 - normL2Old)
         if x_exact is not None:
@@ -232,7 +232,7 @@ def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
         """If there are conditions convergence may not occur check the norm value"""
-        if Flag and normL2 > normL2Old + 100:
+        if Flag and normL2 > normL2Old + 2:
             return [], []
         
         residualError = fabs(normL2 - normL2Old)
@@ -313,4 +313,15 @@ def Hilbert_matrix(N):
         for c in range(N):
             H[r, c] = 1/(r+1+c)
     return H
+
+def mysterious_matrix(N):
+    A = np.zeros([N, N])
+
+    for r in range(N):
+        A[r, r] = 2
+        if r+1 < N:
+            A[r, r+1] = -1
+            A[r+1, r] = -1
+    
+    return A
     
