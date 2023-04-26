@@ -238,17 +238,26 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
 def Grand_Solverr(A, b, x0, x_e, algorithmss):
     xv = []
     graphv = []
-    fig, ax = plt.subplots()
     colors = ["orange", "black", "blue", "red", "green", "pink"]
-    plt.figure(1)
     for i in algorithmss:
         x, graph = i(A, b, x0, x_exact=x_e)
-        ax.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker="*", label=str(i.__name__), linestyle="--")
+        plt.figure(1)
+        plt.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker="*", label=str(i.__name__), linestyle="--")
+        plt.figure(2)
+        plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=".", label=str(i.__name__), linestyle="--")
         xv.append(x)
         graphv.append(graph)
+
+    plt.figure(1)    
     plt.legend(loc="upper right")
-    plt.title("Porównanie metod iteracyjnych")
+    plt.title("Porównanie metod iteracyjnych - wskazania błędu residualny")
     plt.ylabel("błąd residualny")
+    plt.xlabel("iteracja k")
+
+    plt.figure(2)
+    plt.legend(loc="upper right")
+    plt.title("Porównanie metod iteracyjnych - wskazania błędu rozwiązania")
+    plt.ylabel("błąd rozwiązania")
     plt.xlabel("iteracja k")
     plt.show()
 
