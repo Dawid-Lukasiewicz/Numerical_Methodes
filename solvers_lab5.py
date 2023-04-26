@@ -96,8 +96,10 @@ def Gauss_Seidel_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
 
 def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     M, N = A.shape
+    Flag = 0
     if x is None:
         x = np.random.randn(N)
+
 
     """A potential condition defining if we should continue with the method"""
     if alpha < 2/greatest_singular_value(A):
@@ -105,17 +107,20 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     
     """Check if matrix A is SPD - Symmetric Positive Definit"""
     if np.allclose(A, A.T):
-        return [], []
+        Flag = 1
     
     """Spectral norm of A should be >= 1
     Otherwise convergence may be slow or not guaranteed"""
     if norm(A, ord=2) >= 1:
-        return [], []
+        Flag = 1
     
     """Condition number of matrix A should be > 1
     Otherwise convergence may be slow or not guaranteed"""
     if np.linalg.cond(A) > 1:
-        return[], []
+        Flag = 1
+
+    if Flag:
+        print("Warning Landweber: convergence may not occur")
 
     normL2 = residual_error(A, b, x)
     graphY = []
@@ -132,6 +137,9 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
+        """If there are conditions convergence may not occur check the norm value"""
+        if Flag and normL2 > normL2Old:
+            return [], []
         residualError = fabs(normL2 - normL2Old)
         if x_exact is not None:
             graphZ.append(solve_error(x, x_exact))
@@ -188,13 +196,17 @@ def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
+    Flag = 0
 
-    # Check if matrix A is SPD - Symmetric Positive Definit
+    """Check if matrix A is SPD - Symmetric Positive Definit"""
     if np.allclose(A, A.T):
-        return [], []
+        Flag = 1
     
     if min(eigvals(A)) < 0:
         return [], []
+    
+    if Flag:
+        print("Warning SD: convergence may not occur")
 
     normL2 = residual_error(A, b, x)
     graphY = []
@@ -210,6 +222,10 @@ def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
+        """If there are conditions convergence may not occur check the norm value"""
+        if Flag and normL2 > normL2Old:
+            return [], []
+        
         residualError = fabs(normL2 - normL2Old)
         if x_exact is not None:
             graphZ.append(solve_error(x, x_exact))
