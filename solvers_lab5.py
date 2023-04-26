@@ -35,15 +35,14 @@ def Jacobi_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
         x = np.random.randn(N)
 
     S, T = Jacobi_ST(A)
-    normL2 = residual_error(A, b, x)
+    if greatest_singular_value(inv(S)@T) > 1:
+        return [], []
     
-    # print(greatest_singular_value(inv(S)@T))
+    normL2 = residual_error(A, b, x)
 
     graphY = []
     graphX = []
     graphZ = []
-    if greatest_singular_value(inv(S)@T) > 1:
-        return [], []
     for k in range(maxIter):
         graphX.append(k)
         graphY.append(normL2)
@@ -71,12 +70,10 @@ def Gauss_Seidel_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
         x = np.random.randn(N)
 
     S, T = GS_ST(A)
-    normL2 = residual_error(A, b, x)
-    
-    # print(greatest_singular_value(inv(S)@T))
-    
     if greatest_singular_value(inv(S)@T) > 1:
         return [], []
+    
+    normL2 = residual_error(A, b, x)
     
     graphY = []
     graphX = []
@@ -99,12 +96,31 @@ def Gauss_Seidel_iterative(A, b, x, x_exact=None, maxIter=100, epsilon = 1e-7):
 
 def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     M, N = A.shape
+    Flag = 0
     if x is None:
         x = np.random.randn(N)
 
+
     """A potential condition defining if we should continue with the method"""
     if alpha < 2/greatest_singular_value(A):
-        sys.exit("alpha should be less than 2/sigma^2")
+        return [], []
+    
+    """Check if matrix A is SPD - Symmetric Positive Definit"""
+    if np.allclose(A, A.T):
+        Flag = 1
+    
+    """Spectral norm of A should be >= 1
+    Otherwise convergence may be slow or not guaranteed"""
+    if norm(A, ord=2) >= 1:
+        Flag = 1
+    
+    """Condition number of matrix A should be > 1
+    Otherwise convergence may be slow or not guaranteed"""
+    if np.linalg.cond(A) > 1:
+        Flag = 1
+
+    if Flag:
+        print("Warning Landweber: convergence may not occur")
 
     normL2 = residual_error(A, b, x)
     graphY = []
@@ -121,6 +137,9 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
+        """If there are conditions convergence may not occur check the norm value"""
+        if Flag and normL2 > normL2Old:
+            return [], []
         residualError = fabs(normL2 - normL2Old)
         if x_exact is not None:
             graphZ.append(solve_error(x, x_exact))
@@ -130,7 +149,7 @@ def Landweber(A, b, x=None, x_exact=None, alpha=0.5, maxIter=100, epsilon=1e-7):
     graphXY = [graphX, graphY, graphZ]
     return x, graphXY
 
-def SOR_method(A, b, x=None, x_exact = None, omega=0.2, maxIter=100, epsilon=1e-7):
+def SOR_method(A, b, x=None, x_exact = None, omega=1.2, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
@@ -148,9 +167,6 @@ def SOR_method(A, b, x=None, x_exact = None, omega=0.2, maxIter=100, epsilon=1e-
 
     S = L + D/omega
     T = -(U + ((omega-1)*D)/omega)
-
-    # print(greatest_singular_value(inv(S)@T))
-    
     if greatest_singular_value(inv(S)@T) > 1:
         return [], []
     
@@ -180,8 +196,17 @@ def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
     M, N = A.shape
     if x is None:
         x = np.random.randn(N)
+    Flag = 0
 
-    # Should check if matrix A is SPD - Symmetric Positive Definit
+    """Check if matrix A is SPD - Symmetric Positive Definit"""
+    if np.allclose(A, A.T):
+        Flag = 1
+    
+    if min(eigvals(A)) < 0:
+        return [], []
+    
+    if Flag:
+        print("Warning SD: convergence may not occur")
 
     normL2 = residual_error(A, b, x)
     graphY = []
@@ -197,6 +222,10 @@ def SD_method(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
 
         normL2Old = normL2
         normL2 = residual_error(A, b, x)
+        """If there are conditions convergence may not occur check the norm value"""
+        if Flag and normL2 > normL2Old:
+            return [], []
+        
         residualError = fabs(normL2 - normL2Old)
         if x_exact is not None:
             graphZ.append(solve_error(x, x_exact))
@@ -221,7 +250,7 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
         graphY.append(normL2)
 
         for i in range(N):
-            alpha = (b[i] - np.dot(A[i, :], x)) / np.linalg.norm(A[i, :])**2  # Compute the step size
+            alpha = (b[i] - np.dot(A[i, :], x)) / norm(A[i, :])**2  # Compute the step size
             x = x + (alpha * A[i, :])  # Update the solution
 
         normL2Old = normL2
@@ -237,20 +266,33 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
 
 def Grand_Solverr(A, b, x0, x_e, algorithmss):
     xv = []
-    graphv = []
-    fig, ax = plt.subplots()
-    colors = ["orange", "black", "blue", "red", "green", "pink"]
-    plt.figure(1)
+    # graphv = []
+    colors = ["black", "orange", "blue", "red", "green", "pink"]
+    markerList = ["^", ".", "1", "|", "+", "x"]
     for i in algorithmss:
         x, graph = i(A, b, x0, x_exact=x_e)
-        ax.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker="*", label=str(i.__name__), linestyle="--")
+        if not len(x):
+            continue
+        plt.figure(1)
+        plt.plot(graph[0], graph[1], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
+        plt.figure(2)
+        plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
         xv.append(x)
-        graphv.append(graph)
+        # graphv.append(graph)
+
+    plt.figure(1)    
     plt.legend(loc="upper right")
-    plt.title("Porównanie metod iteracyjnych")
+    plt.title("Porównanie metod iteracyjnych - wskazania błędu residualny")
     plt.ylabel("błąd residualny")
+    plt.xlabel("iteracja k")
+
+    plt.figure(2)
+    plt.legend(loc="upper right")
+    plt.title("Porównanie metod iteracyjnych - wskazania błędu rozwiązania")
+    plt.ylabel("błąd rozwiązania")
     plt.xlabel("iteracja k")
     plt.show()
 
-    return xv, graphv
+    return xv
+    # return xv, graphv
     
