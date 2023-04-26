@@ -38,11 +38,11 @@ def gauss_elimination_partial_pivot(inputMatrix, size):
 
             inputMatrix[k] = inputMatrix[k] - ratio * inputMatrix[r]
     
-    print_augm_matrix(inputMatrix, size)
+    # print_augm_matrix(inputMatrix, size)
 
 def back_substitution(inputMatrix, size):
     # Solution vector of size elements
-    solutionVector = np.zeros((size, 1))
+    solutionVector = np.zeros((size))
     # Get first solution value from last row of inputMatrix
     solutionVector[size-1] = inputMatrix[size-1][size] / inputMatrix[size-1][size-1]
 
