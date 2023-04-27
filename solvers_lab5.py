@@ -275,7 +275,6 @@ def Kaczmarz_algorithm(A, b, x=None, x_exact = None, maxIter=100, epsilon=1e-7):
 
 def Grand_Solverr(A, b, x0, x_e, algorithmss):
     xv = []
-    # graphv = []
     colors = ["black", "orange", "blue", "red", "green", "pink"]
     markerList = ["^", ".", "1", "|", "+", "x"]
     for i in algorithmss:
@@ -288,7 +287,6 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
             plt.figure(2)
             plt.plot(graph[0], graph[2], c=colors[algorithmss.index(i)], marker=markerList[algorithmss.index(i)], label=str(i.__name__), linestyle="--")
         xv.append(x)
-        # graphv.append(graph)
 
     plt.figure(1)    
     plt.legend(loc="upper right")
@@ -305,7 +303,6 @@ def Grand_Solverr(A, b, x0, x_e, algorithmss):
     plt.show()
 
     return xv
-    # return xv, graphv
 
 def Hilbert_matrix(N):
     H = np.zeros([N, N])
