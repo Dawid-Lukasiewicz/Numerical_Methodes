@@ -10,6 +10,56 @@ import matrix_handler as mx
 
 from random import random
 
+def compute_gradient(f, x):
+    epsilon = 1e-6
+    gradient = np.zeros_like(x)
+
+    for i in range(len(x)):
+        x_plus = np.copy(x)
+        x_plus[i] += epsilon
+        x_minus = np.copy(x)
+        x_minus[i] -= epsilon
+
+        gradient[i] = (f(x_plus) - f(x_minus)) / (2 * epsilon)
+
+    return gradient
+
+def line_search(f, x, d, a_init=1.0, c2=0.9, c=0.0001, iter=100):
+    a = a_init
+
+    for _ in range(iter):
+        if f(x + a * d) <= f(x) + c * a * np.dot(compute_gradient(f, x), d):
+            break
+
+        a *= c2
+
+    return a
+
+def BFGS(f, x0, tolerance=1e-6, iter=1000):
+    n = len(x0)
+    B = np.eye(n)  # Initialize the Hessian approximation matrix
+
+    x = x0
+    g = compute_gradient(f, x)
+
+    for i in range(iter):
+        d = -np.linalg.solve(B, g)
+        a = line_search(f, x, d)
+        x_next = x + a * d
+        g_next = compute_gradient(f, x_next)
+        s = x_next - x
+        y = g_next - g
+
+        if np.linalg.norm(g_next) < tolerance:
+            break
+
+        c2 = 1 / np.dot(y, s)
+        B = (np.eye(n) - c2 * np.outer(s, y)) @ B @ (np.eye(n) - c2 * np.outer(y, s)) + c2 * np.outer(s, s)
+
+        x = x_next
+        g = g_next
+
+    return x, i
 
 def Gradient_Descent(N, gradientFunc, x0=None, theta=None, iter=200, conv=1e-5):
     """
