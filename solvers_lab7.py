@@ -61,7 +61,7 @@ def BFGS(f, x0, tolerance=1e-6, iter=1000):
 
     return x, i
 
-def Gradient_Descent(N, gradientFunc, x0=None, theta=None, iter=200, conv=1e-5):
+def Gradient_Descent(N, gradientFunc, x0=None, theta=0.1, iter=1000, conv=1e-5):
     """
     Arguments:
     N               -- number of arguments the f(x) function takes
@@ -76,19 +76,13 @@ def Gradient_Descent(N, gradientFunc, x0=None, theta=None, iter=200, conv=1e-5):
     i -- iterations
     """
 
-
-    """ Initialize result vector if not provided """
-    if x0 is None:
-        x0 = np.random.randn(N) * 10
-    """ Initialize parameters if not provided """
-    if theta is None:
-        theta = np.random.randn(N)
-    
     x = x0
     for i in range(iter):
-        gradient = gradientFunc(x)
-        x = x - theta*gradient
-        if all(np.fabs(x - theta*gradient)) <= conv:
+        diff = -theta * gradientFunc(x)
+
+        if np.all(np.fabs(diff)) <= conv:
             break
+
+        x = x + diff
 
     return x, i
