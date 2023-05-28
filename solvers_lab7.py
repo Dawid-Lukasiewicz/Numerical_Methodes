@@ -61,7 +61,7 @@ def BFGS(f, x0, tolerance=1e-6, iter=1000):
 
     return x, i
 
-def Gradient_Descent(N, gradientFunc, x0=None, theta=0.1, iter=1000, conv=1e-5):
+def Gradient_Descent(gradientFunc, x0=None, theta=0.1, iter=1000, tolerance=1e-5):
     """
     Arguments:
     N               -- number of arguments the f(x) function takes
@@ -69,7 +69,7 @@ def Gradient_Descent(N, gradientFunc, x0=None, theta=0.1, iter=1000, conv=1e-5):
     x0              -- initial guess vector
     theta           -- initial learning grade vector 
     iter            -- max iteration before for searching convergence
-    conv            -- convergence value tolerance
+    tolerance       -- convergence value tolerance
 
     Returns:
     x -- found solution
@@ -78,9 +78,9 @@ def Gradient_Descent(N, gradientFunc, x0=None, theta=0.1, iter=1000, conv=1e-5):
 
     x = x0
     for i in range(iter):
-        diff = -theta * gradientFunc(x)
+        diff = -(theta * gradientFunc(x))
 
-        if np.all(np.fabs(diff)) <= conv:
+        if np.all(np.fabs(diff)) <= tolerance:
             break
 
         x = x + diff
