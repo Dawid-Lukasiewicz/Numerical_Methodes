@@ -86,3 +86,21 @@ def Gradient_Descent(gradientFunc, x0=None, theta=0.1, iter=1000, tolerance=1e-5
         x = x + diff
 
     return x, i
+
+def Steepest_Descent(f, x0, tolerance=1e-6, iter=1000):
+    x = x0
+    grad = compute_gradient(f, x)
+
+    for i in range(iter):
+        diff = -grad
+        a = line_search(f, x, diff)
+        x_next = x + a * diff
+        grad_next = compute_gradient(f, x_next)
+
+        if np.linalg.norm(grad_next) < tolerance:
+            break
+
+        x = x_next
+        grad = grad_next
+
+    return x, i
