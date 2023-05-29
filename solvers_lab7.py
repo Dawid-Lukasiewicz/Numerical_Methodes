@@ -24,40 +24,52 @@ def compute_gradient(f, x):
 
     return gradient
 
-def line_search(f, x, d, a_init=1.0, c2=0.9, c=0.0001, iter=100):
-    a = a_init
+def line_search(f, x, diff, a_init=1.0, c2=0.9, c=0.0001, iter=100):
+    alpha = a_init
 
     for _ in range(iter):
-        if f(x + a * d) <= f(x) + c * a * np.dot(compute_gradient(f, x), d):
+        if f(x + alpha * diff) <= f(x) + c * alpha * np.dot(compute_gradient(f, x), diff):
             break
 
-        a *= c2
+        alpha *= c2
 
-    return a
+    return alpha
+
+def line_search2(f, gradientFunc, x, d, alpha_init=1.0, rho=0.9, c=0.0001, iter=100):
+    alpha = alpha_init
+
+    for _ in range(iter):
+        if f(x + alpha * d) <= f(x) + c * alpha * np.dot(gradientFunc(x), d):
+            break
+
+        alpha *= rho
+
+    return alpha
+
 
 def BFGS(f, x0, tolerance=1e-6, iter=1000):
     n = len(x0)
     B = np.eye(n)  # Initialize the Hessian approximation matrix
 
     x = x0
-    g = compute_gradient(f, x)
+    grad = compute_gradient(f, x)
 
     for i in range(iter):
-        d = -np.linalg.solve(B, g)
-        a = line_search(f, x, d)
-        x_next = x + a * d
-        g_next = compute_gradient(f, x_next)
+        diff = -np.linalg.solve(B, grad)
+        alpha = line_search(f, x, diff)
+        x_next = x + alpha * diff
+        grad_next = compute_gradient(f, x_next)
         s = x_next - x
-        y = g_next - g
+        y = grad_next - grad
 
-        if np.linalg.norm(g_next) < tolerance:
+        if np.linalg.norm(grad_next) < tolerance:
             break
 
         c2 = 1 / np.dot(y, s)
         B = (np.eye(n) - c2 * np.outer(s, y)) @ B @ (np.eye(n) - c2 * np.outer(y, s)) + c2 * np.outer(s, s)
 
         x = x_next
-        g = g_next
+        grad = grad_next
 
     return x, i
 
@@ -93,8 +105,8 @@ def Steepest_Descent(f, x0, tolerance=1e-6, iter=1000):
 
     for i in range(iter):
         diff = -grad
-        a = line_search(f, x, diff)
-        x_next = x + a * diff
+        alpha = line_search(f, x, diff)
+        x_next = x + alpha * diff
         grad_next = compute_gradient(f, x_next)
 
         if np.linalg.norm(grad_next) < tolerance:
@@ -102,5 +114,26 @@ def Steepest_Descent(f, x0, tolerance=1e-6, iter=1000):
 
         x = x_next
         grad = grad_next
+
+    return x, i
+
+def Fletcher_Reeves(f, gradientFunc, x0, tolerance=1e-6, iter=1000):
+    x = x0
+    grad = gradientFunc(x)
+    diff = -grad
+    alpha = line_search2(f, gradientFunc, x, diff)
+
+    for i in range(iter):
+        x_next = x + alpha * diff
+        grad_next = gradientFunc(x_next)
+
+        if np.linalg.norm(grad_next) < tolerance:
+            break
+
+        beta = np.dot(grad_next, grad_next) / np.dot(grad, grad)
+        diff = -grad_next + beta * diff
+        grad = grad_next
+        x = x_next
+        alpha = line_search2(f, gradientFunc, x, diff)
 
     return x, i
