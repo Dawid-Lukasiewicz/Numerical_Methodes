@@ -35,11 +35,11 @@ def line_search(f, x, diff, a_init=1.0, c2=0.9, c=0.0001, iter=100):
 
     return alpha
 
-def line_search2(f, gradientFunc, x, d, alpha_init=1.0, rho=0.9, c=0.0001, iter=100):
+def line_search2(f, grad_f, x, d, alpha_init=1.0, rho=0.9, c=0.0001, iter=100):
     alpha = alpha_init
 
     for _ in range(iter):
-        if f(x + alpha * d) <= f(x) + c * alpha * np.dot(gradientFunc(x), d):
+        if f(x + alpha * d) <= f(x) + c * alpha * np.dot(grad_f(x), d):
             break
 
         alpha *= rho
@@ -73,24 +73,11 @@ def BFGS(f, x0, tolerance=1e-6, iter=1000):
 
     return x, i
 
-def Gradient_Descent(gradientFunc, x0=None, theta=0.1, iter=1000, tolerance=1e-5):
-    """
-    Arguments:
-    N               -- number of arguments the f(x) function takes
-    gradientFunc    -- f'(x), function defining gradient of f(x)
-    x0              -- initial guess vector
-    theta           -- initial learning grade vector 
-    iter            -- max iteration before for searching convergence
-    tolerance       -- convergence value tolerance
-
-    Returns:
-    x -- found solution
-    i -- iterations
-    """
-
+def Gradient_Descent(grad_f, x0=None, theta=0.1, iter=1000, tolerance=1e-5):
+    
     x = x0
     for i in range(iter):
-        diff = -(theta * gradientFunc(x))
+        diff = -(theta * grad_f(x))
 
         if np.all(np.fabs(diff)) <= tolerance:
             break
@@ -117,15 +104,15 @@ def Steepest_Descent(f, x0, tolerance=1e-6, iter=1000):
 
     return x, i
 
-def Fletcher_Reeves(f, gradientFunc, x0, tolerance=1e-6, iter=1000):
+def Fletcher_Reeves(f, grad_f, x0, tolerance=1e-6, iter=1000):
     x = x0
-    grad = gradientFunc(x)
+    grad = grad_f(x)
     diff = -grad
-    alpha = line_search2(f, gradientFunc, x, diff)
+    alpha = line_search2(f, grad_f, x, diff)
 
     for i in range(iter):
         x_next = x + alpha * diff
-        grad_next = gradientFunc(x_next)
+        grad_next = grad_f(x_next)
 
         if np.linalg.norm(grad_next) < tolerance:
             break
@@ -134,6 +121,6 @@ def Fletcher_Reeves(f, gradientFunc, x0, tolerance=1e-6, iter=1000):
         diff = -grad_next + beta * diff
         grad = grad_next
         x = x_next
-        alpha = line_search2(f, gradientFunc, x, diff)
+        alpha = line_search2(f, grad_f, x, diff)
 
     return x, i
