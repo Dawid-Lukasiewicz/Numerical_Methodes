@@ -124,3 +124,24 @@ def Fletcher_Reeves(f, grad_f, x0, tolerance=1e-6, iter=1000):
         alpha = line_search2(f, grad_f, x, diff)
 
     return x, i
+
+def Polak_Ribiere(f, grad_f, x0, tolerance=1e-6, iter=1000):
+    x = x0
+    grad = grad_f(x)
+    diff = -grad
+    alpha = line_search2(f, grad_f, x, diff)
+
+    for i in range(iter):
+        x_next = x + alpha * diff
+        grad_next = grad_f(x_next)
+
+        if np.linalg.norm(grad_next) < tolerance:
+            break
+
+        beta = np.dot(grad_next, (grad_next - grad)) / np.dot(grad, grad)
+        diff = -grad_next + beta * diff
+        grad = grad_next
+        x = x_next
+        alpha = line_search2(f, grad_f, x, diff)
+
+    return x, i
