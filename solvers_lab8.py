@@ -68,3 +68,22 @@ def Trust_Region(func, x0, radius=1.0, tol=1e-6, max_iter=100):
         iteration += 1
     
     return x, iteration
+
+def Broyden_Method(func, x0, tol=1e-6, max_iter=100):
+    x = x0.copy()
+    iteration = 0
+    n = len(x)
+    B = np.eye(n)  # Initial approximation of Jacobian
+
+    while np.linalg.norm(func(x)) > tol and iteration < max_iter:
+        f = func(x)
+        p = np.linalg.solve(B, -f)
+        x_new = x + p
+        f_new = func(x_new)
+
+        y = f_new - f
+        B += np.outer((y - B @ p), p) / (p @ p)
+        x = x_new
+        iteration += 1
+
+    return x, iteration
