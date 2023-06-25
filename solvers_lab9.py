@@ -38,3 +38,25 @@ def Active_Set(f, Q, c, A, b, iter=100):
         x = active_solution.x
 
     return x, i
+
+def Conjugate_Gradient(Q, c, A, b, x0, max_iterations=1000, tolerance=1e-6):
+    n = Q.shape[0]  # Dimension of the problem
+
+    x = x0.copy()   # Initial guess for the solution
+    r = np.dot(Q, x) + c - np.dot(A.T, np.linalg.solve(np.dot(A, A.T), np.dot(A, x) - b))
+    p = -r          # Initial conjugate direction
+
+    for i in range(max_iterations):
+        Qp = np.dot(Q, p)
+        alpha = np.dot(r, r) / np.dot(p, Qp)
+        x = x + alpha * p
+
+        r_new = r + alpha * Qp
+        if np.linalg.norm(r_new) < tolerance:
+            break
+
+        beta = np.dot(r_new, r_new) / np.dot(r, r)
+        p = -r_new + beta * p
+        r = r_new
+
+    return x, i
